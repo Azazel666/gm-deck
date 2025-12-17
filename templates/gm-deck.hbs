@@ -1,0 +1,60 @@
+<div class="gm-deck-container">
+  {{!-- Content Area --}}
+  <div class="gm-deck-content" data-drop-zone="true">
+
+    {{#if isEmpty}}
+    <div class="gm-deck-empty">
+      <p><i class="fas fa-hand-pointer"></i></p>
+      <p>Drag tiles or macros here</p>
+    </div>
+    {{else}}
+
+    {{!-- Tile Section --}}
+    {{#if hasTiles}}
+    <div class="gm-deck-section">
+      <div class="gm-deck-section-header">
+        <i class="fas fa-image"></i> Tiles
+      </div>
+      <div class="gm-deck-items">
+        {{#each tileItems}}
+        <div class="gm-deck-item {{statusClass}}"
+             data-item-id="{{id}}"
+             data-item-name="{{name}}"
+             title="{{name}} ({{#if isVisible}}Visible{{else}}Hidden{{/if}}) - Click to toggle, Right-click to remove"
+             style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
+          <img src="{{icon}}" alt="{{name}}" draggable="false"/>
+          <div class="gm-deck-item-status">
+            <i class="fas {{statusIcon}}"></i>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{!-- Macro Section --}}
+    {{#if hasMacros}}
+    <div class="gm-deck-section">
+      <div class="gm-deck-section-header">
+        <i class="fas fa-terminal"></i> Macros
+      </div>
+      <div class="gm-deck-items">
+        {{#each macroItems}}
+        <div class="gm-deck-item {{statusClass}}"
+             data-item-id="{{id}}"
+             data-item-name="{{name}}"
+             title="{{name}} - Click to execute, Right-click to remove"
+             style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
+          <img src="{{icon}}" alt="{{name}}" draggable="false"/>
+          <div class="gm-deck-item-status">
+            <i class="fas {{statusIcon}}"></i>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{/if}}
+  </div>
+</div>

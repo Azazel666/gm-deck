@@ -1,0 +1,247 @@
+/* GM Deck Styles - ApplicationV2 */
+
+/* -------------------------------------------- */
+/*  Main Container & Positioning                */
+/* -------------------------------------------- */
+
+.gm-deck {
+  font-family: var(--font-primary);
+}
+
+.gm-deck .window-header {
+  cursor: move;
+  background: linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 100%);
+  border-bottom: 1px solid #555;
+  padding: 6px 12px;
+}
+
+.gm-deck .window-header:hover {
+  background: linear-gradient(135deg, #5a5a5a 0%, #3a3a3a 100%);
+}
+
+.gm-deck .window-title {
+  color: #ddd;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.gm-deck .window-content {
+  padding: 0;
+}
+
+.gm-deck-container {
+  background: rgba(30, 30, 30, 0.95);
+  min-width: 60px;
+  max-width: 300px;
+}
+
+/* -------------------------------------------- */
+/*  Content Area                                */
+/* -------------------------------------------- */
+
+.gm-deck-content {
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.gm-deck-content.drag-over {
+  background: rgba(124, 94, 220, 0.2);
+  outline: 2px dashed #7c5edc;
+  outline-offset: -4px;
+}
+
+/* Empty State */
+.gm-deck-empty {
+  text-align: center;
+  padding: 20px 10px;
+  color: #888;
+  font-size: 12px;
+}
+
+.gm-deck-empty i {
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.gm-deck-empty p {
+  margin: 4px 0;
+}
+
+/* -------------------------------------------- */
+/*  Sections                                    */
+/* -------------------------------------------- */
+
+.gm-deck-section {
+  margin-bottom: 12px;
+}
+
+.gm-deck-section:last-child {
+  margin-bottom: 0;
+}
+
+.gm-deck-section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  margin-bottom: 8px;
+  color: #999;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.gm-deck-section-header i {
+  font-size: 10px;
+}
+
+/* -------------------------------------------- */
+/*  Item Grid                                   */
+/* -------------------------------------------- */
+
+.gm-deck-items {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 6px;
+  visibility: visible !important;
+}
+
+/* -------------------------------------------- */
+/*  Individual Items                            */
+/* -------------------------------------------- */
+
+.gm-deck-item {
+  position: relative;
+  display: block !important;
+  visibility: visible !important;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background: #444;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.gm-deck-item:hover {
+  transform: scale(1.08);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.gm-deck-item:active,
+.gm-deck-item.executing {
+  transform: scale(0.95);
+}
+
+.gm-deck-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Status Indicator */
+.gm-deck-item-status {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+/* -------------------------------------------- */
+/*  Item States                                 */
+/* -------------------------------------------- */
+
+/* Visible Tile */
+.gm-deck-item.tile-visible {
+  border-color: #4ade80;
+}
+
+.gm-deck-item.tile-visible .gm-deck-item-status {
+  color: #4ade80;
+}
+
+/* Hidden Tile */
+.gm-deck-item.tile-hidden {
+  border-color: #f87171;
+  opacity: 0.7;
+}
+
+.gm-deck-item.tile-hidden:hover {
+  opacity: 1;
+}
+
+.gm-deck-item.tile-hidden .gm-deck-item-status {
+  color: #f87171;
+}
+
+/* Missing Tile */
+.gm-deck-item.tile-missing {
+  border-color: #fbbf24;
+  opacity: 0.5;
+}
+
+.gm-deck-item.tile-missing .gm-deck-item-status {
+  color: #fbbf24;
+}
+
+/* Macro */
+.gm-deck-item.macro {
+  border-color: #60a5fa;
+}
+
+.gm-deck-item.macro:hover {
+  border-color: #93c5fd;
+}
+
+.gm-deck-item.macro .gm-deck-item-status {
+  color: #60a5fa;
+}
+
+/* -------------------------------------------- */
+/*  Scrollbar Styling                           */
+/* -------------------------------------------- */
+
+.gm-deck-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gm-deck-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.gm-deck-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+.gm-deck-content::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* -------------------------------------------- */
+/*  Drag Over State for Header                  */
+/* -------------------------------------------- */
+
+.gm-deck-header.drag-over {
+  background: linear-gradient(135deg, #5a4a8a 0%, #3a2a5a 100%);
+}

@@ -1,0 +1,29 @@
+{
+  "id": "gm-deck",
+  "title": "GM Deck",
+  "description": "A scene-specific control panel for GMs to quickly toggle tiles and execute macros.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Mattias"
+    }
+  ],
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/gm-deck.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "socket": false
+}

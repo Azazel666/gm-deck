@@ -1,0 +1,48 @@
+{
+  "gm-deck": {
+    "title": "GM Deck",
+    "settings": {
+      "position": {
+        "name": "Panel Position",
+        "hint": "Where the GM Deck panel appears on screen."
+      },
+      "collapsedByDefault": {
+        "name": "Start Collapsed",
+        "hint": "Whether the panel starts collapsed when opening a scene."
+      },
+      "buttonSize": {
+        "name": "Button Size",
+        "hint": "Size of the deck buttons in pixels."
+      }
+    },
+    "positions": {
+      "top-left": "Top Left",
+      "top-right": "Top Right",
+      "bottom-left": "Bottom Left",
+      "bottom-right": "Bottom Right",
+      "left-center": "Left Center",
+      "right-center": "Right Center"
+    },
+    "sections": {
+      "tiles": "Tiles",
+      "macros": "Macros"
+    },
+    "messages": {
+      "added": "Added \"{name}\" to GM Deck.",
+      "removed": "Removed \"{name}\" from GM Deck.",
+      "duplicate": "This item is already in the GM Deck.",
+      "tileNotFound": "Tile not found on canvas.",
+      "macroNotFound": "Macro not found.",
+      "dropHint": "Drop a Tile or Macro onto the GM Deck to add it."
+    },
+    "tooltips": {
+      "tileVisible": "{name} (Visible) - Click to toggle, Right-click to remove",
+      "tileHidden": "{name} (Hidden) - Click to toggle, Right-click to remove",
+      "macro": "{name} - Click to execute, Right-click to remove"
+    },
+    "dialog": {
+      "removeTitle": "Remove from GM Deck",
+      "removeContent": "Remove <strong>{name}</strong> from the deck?"
+    }
+  }
+}
