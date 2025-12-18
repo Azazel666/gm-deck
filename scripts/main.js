@@ -48,6 +48,29 @@ function registerSettings() {
       }
     }
   });
+
+  game.settings.register(MODULE_ID, 'cutinDismissalMode', {
+    name: 'Cinematic Cutin Dismissal Mode',
+    hint: 'How players dismiss cinematic cutins. Can be overridden per-cutin.',
+    scope: 'world',
+    config: true,
+    type: String,
+    choices: {
+      'user-dismiss': 'Players Click to Dismiss',
+      'gm-dismiss': 'GM Controls Dismissal',
+      'auto-dismiss': 'Auto-Dismiss After Duration'
+    },
+    default: 'user-dismiss'
+  });
+
+  game.settings.register(MODULE_ID, 'customCutinPresets', {
+    name: 'Custom Cutin Presets',
+    hint: 'Stored custom cutin presets.',
+    scope: 'world',
+    config: false,
+    type: Array,
+    default: []
+  });
 }
 
 /* -------------------------------------------- */
@@ -57,6 +80,15 @@ function registerSettings() {
 Hooks.once('init', () => {
   console.log(`${MODULE_ID} | Initializing GM Deck`);
   registerSettings();
+
+  // Register Handlebars helpers
+  Handlebars.registerHelper('eq', function(a, b) {
+    return a === b;
+  });
+
+  Handlebars.registerHelper('add', function(a, b) {
+    return a + b;
+  });
   
   // Expose API for macros/other modules
   game.modules.get(MODULE_ID).api = {
@@ -64,16 +96,89 @@ Hooks.once('init', () => {
     refresh: () => gmDeckApp?.render(),
     addTile: (tileId) => GMDeckData.addItem('tile-toggle', tileId),
     addMacro: (macroUuid) => GMDeckData.addItem('macro', macroUuid),
-    removeItem: (itemId) => GMDeckData.removeItem(itemId)
+    removeItem: (itemId) => GMDeckData.removeItem(itemId),
+
+    // Cutin API
+    addCutin: (config, name, icon) => GMDeckData.addItem('cinematic-cutin', null, { config, name, icon }),
+    showCutin: async (config, targetUsers = 'all') => {
+      const cutinId = `cutin-${foundry.utils.randomID()}`;
+      game.socket.emit(`module.${MODULE_ID}`, {
+        messageType: 'showCutin',
+        senderId: game.user.id,
+        data: { config, targetUsers, cutinId }
+      });
+      if (targetUsers === 'all' || targetUsers.includes(game.user.id)) {
+        const { GMDeckCutinOverlay } = await import('./gm-deck-cutin-overlay.js');
+        new GMDeckCutinOverlay(config, cutinId).render({ force: true });
+      }
+    },
+    dismissCutin: (cutinId) => GMDeckData.broadcastDismissCutin(cutinId),
+    createCutinDialog: async () => {
+      const { GMDeckCutinConfig } = await import('./gm-deck-cutin-config.js');
+      new GMDeckCutinConfig().render({ force: true });
+    },
+
+    // Preset API
+    presets: {
+      get: async () => {
+        const { GMDeckPresets } = await import('./gm-deck-presets.js');
+        return GMDeckPresets.getPresets();
+      },
+      save: async (name, config) => {
+        const { GMDeckPresets } = await import('./gm-deck-presets.js');
+        return GMDeckPresets.savePreset(name, config);
+      },
+      delete: async (presetId) => {
+        const { GMDeckPresets } = await import('./gm-deck-presets.js');
+        return GMDeckPresets.deletePreset(presetId);
+      }
+    }
   };
 });
 
 Hooks.once('ready', () => {
-  // Only show for GM
-  if (!game.user.isGM) return;
-  
   console.log(`${MODULE_ID} | GM Deck ready`);
+
+  // Socket handler for cinematic cutins (ALL users need this to receive cutins)
+  game.socket.on(`module.${MODULE_ID}`, (payload) => {
+    const { messageType, senderId, data } = payload;
+
+    if (messageType === 'showCutin') {
+      handleShowCutin(data);
+    } else if (messageType === 'dismissCutin') {
+      handleDismissCutin(data);
+    }
+  });
 });
+
+/**
+ * Handle incoming cutin display requests
+ */
+function handleShowCutin(data) {
+  const { config, targetUsers, cutinId } = data;
+
+  // Check if this user should see the cutin
+  if (targetUsers === 'all' || targetUsers.includes(game.user.id)) {
+    // GMDeckCutinOverlay will be imported once created
+    import('./gm-deck-cutin-overlay.js').then(({ GMDeckCutinOverlay }) => {
+      const overlay = new GMDeckCutinOverlay(config, cutinId);
+      overlay.render({ force: true });
+    });
+  }
+}
+
+/**
+ * Handle cutin dismissal broadcasts
+ */
+function handleDismissCutin(data) {
+  const { cutinId } = data;
+
+  // Find and dismiss the overlay
+  const overlay = ui.windows[cutinId];
+  if (overlay && typeof overlay.dismiss === 'function') {
+    overlay.dismiss();
+  }
+}
 
 /* -------------------------------------------- */
 /*  Scene Hooks                                 */
@@ -114,6 +219,19 @@ Hooks.on('getSceneControlButtons', (controls) => {
         } else {
           gmDeckApp.render({ force: true });
         }
+      }
+    });
+
+    // Add Create Cutin button
+    tokenControls.tools.push({
+      name: 'gm-deck-cutin',
+      title: 'GM Deck: Create Cinematic Cutin',
+      icon: 'fas fa-film',
+      button: true,
+      onClick: () => {
+        import('./gm-deck-cutin-config.js').then(({ GMDeckCutinConfig }) => {
+          new GMDeckCutinConfig().render({ force: true });
+        });
       }
     });
   }

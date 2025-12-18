@@ -37,6 +37,52 @@
 }
 
 /* -------------------------------------------- */
+/*  Quick Actions Bar                           */
+/* -------------------------------------------- */
+
+.gm-deck-actions {
+  padding: 8px;
+  background: rgba(20, 20, 20, 0.8);
+  border-bottom: 1px solid #3a3a3a;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gm-deck-action-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #4a4a8a 0%, #3a3a6a 100%);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.gm-deck-action-btn:hover {
+  background: linear-gradient(135deg, #5a5a9a 0%, #4a4a7a 100%);
+  border-color: #7c5edc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(124, 94, 220, 0.3);
+}
+
+.gm-deck-action-btn:active {
+  transform: translateY(0);
+}
+
+.gm-deck-action-btn i {
+  font-size: 12px;
+}
+
+/* -------------------------------------------- */
 /*  Content Area                                */
 /* -------------------------------------------- */
 
@@ -214,6 +260,20 @@
 
 .gm-deck-item.macro .gm-deck-item-status {
   color: #60a5fa;
+}
+
+/* Cinematic Cutin */
+.gm-deck-item.cinematic-cutin {
+  border-color: #c084fc;
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 100%);
+}
+
+.gm-deck-item.cinematic-cutin:hover {
+  border-color: #e9d5ff;
+}
+
+.gm-deck-item.cinematic-cutin .gm-deck-item-status {
+  color: #c084fc;
 }
 
 /* -------------------------------------------- */

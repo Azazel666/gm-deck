@@ -13,10 +13,15 @@
     }
   ],
   "esmodules": [
-    "scripts/main.js"
+    "scripts/main.js",
+    "scripts/gm-deck-presets.js",
+    "scripts/gm-deck-cutin-overlay.js",
+    "scripts/gm-deck-cutin-config.js"
   ],
   "styles": [
-    "styles/gm-deck.css"
+    "styles/gm-deck.css",
+    "styles/gm-deck-cutin.css",
+    "styles/gm-deck-cutin-config.css"
   ],
   "languages": [
     {
@@ -25,5 +30,5 @@
       "path": "lang/en.json"
     }
   ],
-  "socket": false
+  "socket": true
 }

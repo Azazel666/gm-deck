@@ -61,6 +61,7 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
     // Group items by type
     const tileItems = [];
     const macroItems = [];
+    const cutinItems = [];
 
     for (const item of items) {
       if (item.type === 'tile-toggle') {
@@ -82,6 +83,12 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
           statusIcon: 'fa-play',
           statusClass: 'macro'
         });
+      } else if (item.type === 'cinematic-cutin') {
+        cutinItems.push({
+          ...item,
+          statusIcon: 'fa-play-circle',
+          statusClass: 'cinematic-cutin'
+        });
       }
     }
 
@@ -89,8 +96,10 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
       buttonSize,
       hasTiles: tileItems.length > 0,
       hasMacros: macroItems.length > 0,
+      hasCutins: cutinItems.length > 0,
       tileItems,
       macroItems,
+      cutinItems,
       isEmpty: items.length === 0
     };
   }
@@ -134,6 +143,12 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
       item.addEventListener('contextmenu', this.#onItemContext.bind(this));
     });
 
+    // Create Cutin button
+    const createCutinBtn = el.querySelector('[data-action="create-cutin"]');
+    if (createCutinBtn) {
+      createCutinBtn.addEventListener('click', this.#onCreateCutin.bind(this));
+    }
+
     // Drag and drop on content area
     const content = el.querySelector('.gm-deck-content');
     if (content) {
@@ -149,6 +164,16 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
       windowHeader.addEventListener('dragleave', this.#onDragLeave.bind(this));
       windowHeader.addEventListener('drop', this.#onDrop.bind(this));
     }
+  }
+
+  /**
+   * Open cutin configuration dialog
+   */
+  #onCreateCutin(event) {
+    event.preventDefault();
+    import('./gm-deck-cutin-config.js').then(({ GMDeckCutinConfig }) => {
+      new GMDeckCutinConfig().render({ force: true });
+    });
   }
 
   /**

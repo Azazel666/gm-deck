@@ -56,6 +56,28 @@ export class GMDeckData {
       }
       name = options.name ?? macro.name;
       icon = options.icon ?? macro.img ?? 'icons/svg/dice-target.svg';
+    } else if (type === 'cinematic-cutin') {
+      // Cutins come with pre-configured options
+      const config = options.config;
+      if (!config || !config.characterImage) {
+        ui.notifications.error('Invalid cutin configuration.');
+        return null;
+      }
+      name = options.name ?? 'Cinematic Cutin';
+      icon = options.icon ?? config.characterImage;
+
+      const newItem = {
+        id: foundry.utils.randomID(),
+        name,
+        icon,
+        type: 'cinematic-cutin',
+        targetId: null,
+        config
+      };
+      items.push(newItem);
+      await this.setItems(items);
+      ui.notifications.info(`Added "${name}" to GM Deck.`);
+      return newItem;
     } else {
       ui.notifications.error('Unknown item type.');
       return null;
@@ -71,7 +93,7 @@ export class GMDeckData {
 
     items.push(newItem);
     await this.setItems(items);
-    
+
     ui.notifications.info(`Added "${name}" to GM Deck.`);
     return newItem;
   }
@@ -149,6 +171,8 @@ export class GMDeckData {
       await this.toggleTile(item.targetId);
     } else if (item.type === 'macro') {
       await this.executeMacro(item.targetId);
+    } else if (item.type === 'cinematic-cutin') {
+      await this.executeCutin(itemId);
     }
   }
 
@@ -194,9 +218,59 @@ export class GMDeckData {
     if (!tile) {
       return { exists: false, hidden: null };
     }
-    return { 
-      exists: true, 
-      hidden: tile.document.hidden 
+    return {
+      exists: true,
+      hidden: tile.document.hidden
     };
+  }
+
+  /**
+   * Execute a cinematic cutin
+   * @param {string} itemId - The deck item ID
+   */
+  static async executeCutin(itemId) {
+    const items = this.getItems();
+    const item = items.find(i => i.id === itemId);
+
+    if (!item || item.type !== 'cinematic-cutin') {
+      ui.notifications.error('Cutin not found.');
+      return;
+    }
+
+    const config = item.config;
+    const cutinId = `cutin-${foundry.utils.randomID()}`;
+
+    // Broadcast via socket
+    game.socket.emit(`module.${MODULE_ID}`, {
+      messageType: 'showCutin',
+      senderId: game.user.id,
+      data: {
+        config,
+        targetUsers: config.audience,
+        cutinId
+      }
+    });
+
+    // Show locally for GM
+    if (config.audience === 'all' || config.audience.includes(game.user.id)) {
+      import('./gm-deck-cutin-overlay.js').then(({ GMDeckCutinOverlay }) => {
+        const overlay = new GMDeckCutinOverlay(config, cutinId);
+        overlay.render({ force: true });
+      });
+    }
+
+    console.log(`${MODULE_ID} | Executed cutin: ${item.name}`);
+  }
+
+  /**
+   * Broadcast cutin dismissal to all clients
+   * @param {string} cutinId - The cutin overlay ID
+   */
+  static broadcastDismissCutin(cutinId) {
+    game.socket.emit(`module.${MODULE_ID}`, {
+      messageType: 'dismissCutin',
+      senderId: game.user.id,
+      data: { cutinId }
+    });
   }
 }

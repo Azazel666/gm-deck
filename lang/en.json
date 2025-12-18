@@ -25,7 +25,8 @@
     },
     "sections": {
       "tiles": "Tiles",
-      "macros": "Macros"
+      "macros": "Macros",
+      "cutins": "Cinematic Cutins"
     },
     "messages": {
       "added": "Added \"{name}\" to GM Deck.",
@@ -43,6 +44,92 @@
     "dialog": {
       "removeTitle": "Remove from GM Deck",
       "removeContent": "Remove <strong>{name}</strong> from the deck?"
+    },
+    "cutin": {
+      "configTitle": "Configure Cinematic Cutin",
+      "tabs": {
+        "image": "Character Image",
+        "backdrop": "Backdrop Style",
+        "text": "Text Overlays",
+        "animation": "Animation",
+        "audience": "Audience",
+        "dismissal": "Dismissal"
+      },
+      "imageSource": {
+        "actor": "Actor Portrait",
+        "tile": "Tile Image",
+        "journal": "Journal Image",
+        "custom": "Custom Upload"
+      },
+      "backdropStyles": {
+        "diagonal-red": "Diagonal Red (JRPG)",
+        "banner-black": "Black Banner",
+        "squares-gold": "Gold Squares",
+        "vertical-split": "Vertical Split",
+        "gradient-burst": "Gradient Burst",
+        "minimal-fade": "Minimal Fade"
+      },
+      "animationStyles": {
+        "slide-right": "Slide from Right",
+        "slide-left": "Slide from Left",
+        "fade": "Fade In",
+        "zoom": "Zoom In",
+        "diagonal-sweep": "Diagonal Sweep"
+      },
+      "textPositions": {
+        "top-left": "Top Left",
+        "top-center": "Top Center",
+        "top-right": "Top Right",
+        "middle-left": "Middle Left",
+        "middle-center": "Center",
+        "middle-right": "Middle Right",
+        "bottom-left": "Bottom Left",
+        "bottom-center": "Bottom Center",
+        "bottom-right": "Bottom Right"
+      },
+      "dismissalModes": {
+        "user-dismiss": "Players Click to Dismiss",
+        "gm-dismiss": "GM Controls Dismissal",
+        "auto-dismiss": "Auto-Dismiss After Duration",
+        "default": "Use Module Setting"
+      },
+      "buttons": {
+        "addText": "Add Text Layer",
+        "removeText": "Remove",
+        "preview": "Preview Cutin",
+        "loadPreset": "Load Preset",
+        "savePreset": "Save as Preset",
+        "save": "Save to Deck",
+        "update": "Update",
+        "cancel": "Cancel",
+        "edit": "Edit Configuration",
+        "duplicate": "Duplicate",
+        "remove": "Remove from Deck"
+      },
+      "messages": {
+        "presetSaved": "Preset \"{name}\" saved successfully.",
+        "presetLoaded": "Preset \"{name}\" loaded.",
+        "cutinAdded": "Cinematic cutin \"{name}\" added to deck.",
+        "cutinUpdated": "Cinematic cutin \"{name}\" updated.",
+        "invalidConfig": "Invalid cutin configuration.",
+        "cutinNotFound": "Cutin not found."
+      },
+      "labels": {
+        "name": "Cutin Name",
+        "selectImage": "Select Character Image",
+        "selectBackdrop": "Select Backdrop Style",
+        "textContent": "Text Content",
+        "font": "Font",
+        "fontSize": "Font Size",
+        "textColor": "Text Color",
+        "textPosition": "Position",
+        "hasBackground": "Solid Background",
+        "animationDuration": "Entrance Duration (ms)",
+        "exitDuration": "Exit Duration (ms)",
+        "autoDismissDelay": "Auto-Dismiss Delay (ms)",
+        "targetAllPlayers": "All Players",
+        "targetSpecificPlayers": "Specific Players"
+      }
     }
   }
 }

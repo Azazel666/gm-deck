@@ -1,4 +1,11 @@
 <div class="gm-deck-container">
+  {{!-- Quick Actions Bar --}}
+  <div class="gm-deck-actions">
+    <button class="gm-deck-action-btn" data-action="create-cutin" title="Create Cinematic Cutin">
+      <i class="fas fa-film"></i> New Cutin
+    </button>
+  </div>
+
   {{!-- Content Area --}}
   <div class="gm-deck-content" data-drop-zone="true">
 
@@ -44,6 +51,29 @@
              data-item-id="{{id}}"
              data-item-name="{{name}}"
              title="{{name}} - Click to execute, Right-click to remove"
+             style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
+          <img src="{{icon}}" alt="{{name}}" draggable="false"/>
+          <div class="gm-deck-item-status">
+            <i class="fas {{statusIcon}}"></i>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{!-- Cutin Section --}}
+    {{#if hasCutins}}
+    <div class="gm-deck-section">
+      <div class="gm-deck-section-header">
+        <i class="fas fa-film"></i> Cinematic Cutins
+      </div>
+      <div class="gm-deck-items">
+        {{#each cutinItems}}
+        <div class="gm-deck-item {{statusClass}}"
+             data-item-id="{{id}}"
+             data-item-name="{{name}}"
+             title="{{name}} - Click to play, Right-click for options"
              style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
           <img src="{{icon}}" alt="{{name}}" draggable="false"/>
           <div class="gm-deck-item-status">

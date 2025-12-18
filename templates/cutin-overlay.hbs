@@ -1,0 +1,33 @@
+<div class="cutin-container {{animationClass}}" data-backdrop="{{backdropStyle}}">
+
+  {{!-- Backdrop Layer --}}
+  <div class="cutin-backdrop backdrop-{{backdropStyle}}"></div>
+
+  {{!-- Character Image --}}
+  <div class="cutin-character">
+    <img src="{{characterImage}}" alt="Character" />
+  </div>
+
+  {{!-- Text Layers --}}
+  <div class="cutin-text-layers">
+    {{#each textLayers}}
+    <div class="cutin-text text-{{position}} {{#if hasBackground}}has-bg{{/if}}"
+         style="font-family: {{font}}; font-size: {{size}}px; color: {{color}};">
+      {{text}}
+    </div>
+    {{/each}}
+  </div>
+
+  {{!-- User Dismiss Hint --}}
+  {{#if showUserHint}}
+  <div class="cutin-dismiss-hint">Click anywhere to dismiss</div>
+  {{/if}}
+
+  {{!-- GM Dismiss Controls --}}
+  {{#if showGMControls}}
+  <button class="cutin-gm-dismiss" type="button">
+    <i class="fas fa-times"></i> Dismiss for All
+  </button>
+  {{/if}}
+
+</div>

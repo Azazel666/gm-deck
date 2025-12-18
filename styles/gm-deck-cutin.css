@@ -1,0 +1,523 @@
+/* GM Deck - Cinematic Cutin Overlay Styles */
+
+/* -------------------------------------------- */
+/*  Full-Screen Overlay Container              */
+/* -------------------------------------------- */
+
+.gm-deck-cutin-overlay {
+  z-index: 10000 !important;
+  pointer-events: all !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  overflow: hidden !important;
+}
+
+/* Force all nested wrapper divs to be transparent and fullscreen */
+.gm-deck-cutin-overlay *:not(.cutin-container):not(.cutin-backdrop):not(.cutin-character):not(.cutin-text-layers):not(.cutin-text):not(.cutin-dismiss-hint):not(.cutin-gm-dismiss):not(img):not(i):not(button) {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.cutin-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  cursor: pointer;
+  --entrance-duration: 800ms;
+  --exit-duration: 400ms;
+}
+
+/* -------------------------------------------- */
+/*  Backdrop Styles (6 Presets)                */
+/* -------------------------------------------- */
+
+.cutin-backdrop {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  overflow: visible !important;
+}
+
+/* Diagonal Red (JRPG Style) */
+.backdrop-diagonal-red {
+  background: linear-gradient(135deg,
+    #1a1a1a 0%,
+    #cc0000 30%,
+    #ff3333 50%,
+    #cc0000 70%,
+    #1a1a1a 100%);
+  clip-path: polygon(0 0, 100% 15%, 100% 85%, 0 100%);
+}
+
+.backdrop-diagonal-red::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0,0,0,0.1) 10px,
+    rgba(0,0,0,0.1) 20px
+  );
+}
+
+/* Banner Black */
+.backdrop-banner-black {
+  background: linear-gradient(180deg,
+    transparent 0%,
+    transparent 20%,
+    #000000 25%,
+    #1a1a1a 50%,
+    #000000 75%,
+    transparent 80%,
+    transparent 100%
+  );
+  border-top: 3px solid #d4af37;
+  border-bottom: 3px solid #d4af37;
+}
+
+/* Squares Pattern */
+.backdrop-squares-gold {
+  background: #0a0a0a;
+  background-image:
+    linear-gradient(45deg, #d4af37 25%, transparent 25%),
+    linear-gradient(-45deg, #d4af37 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #d4af37 75%),
+    linear-gradient(-45deg, transparent 75%, #d4af37 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  opacity: 0.95;
+}
+
+/* Vertical Split */
+.backdrop-vertical-split {
+  background: linear-gradient(90deg,
+    #1a1a2e 0%,
+    #16213e 40%,
+    #0f3460 50%,
+    #16213e 60%,
+    #1a1a2e 100%
+  );
+}
+
+/* Gradient Burst */
+.backdrop-gradient-burst {
+  background: radial-gradient(ellipse at center,
+    rgba(138, 43, 226, 0.8) 0%,
+    rgba(75, 0, 130, 0.6) 40%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+}
+
+/* Minimal Fade */
+.backdrop-minimal-fade {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+/* -------------------------------------------- */
+/*  Character Image                             */
+/* -------------------------------------------- */
+
+.cutin-character {
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: 50% !important;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5%;
+  overflow: visible !important;
+}
+
+/* Override Foundry's default image sizing */
+.cutin-character img {
+  max-height: 90vh !important;
+  max-width: none !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.8));
+}
+
+/* -------------------------------------------- */
+/*  Text Layers                                 */
+/* -------------------------------------------- */
+
+.cutin-text-layers {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 3 !important;
+  pointer-events: none;
+  overflow: visible !important;
+}
+
+.cutin-text {
+  position: absolute !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 4px 4px 8px rgba(0,0,0,0.9);
+  white-space: nowrap;
+}
+
+.cutin-text.has-bg {
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.7);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* Text Positions (9 options) */
+.text-top-left {
+  top: 10%;
+  left: 5%;
+}
+
+.text-top-center {
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-top-right {
+  top: 10%;
+  right: 5%;
+}
+
+.text-middle-left {
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+}
+
+.text-middle-center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text-middle-right {
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+}
+
+.text-bottom-left {
+  bottom: 10%;
+  left: 5%;
+}
+
+.text-bottom-center {
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-bottom-right {
+  bottom: 10%;
+  right: 5%;
+}
+
+/* -------------------------------------------- */
+/*  Dismiss Hint & Controls                     */
+/* -------------------------------------------- */
+
+.cutin-dismiss-hint {
+  position: absolute !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 4 !important;
+  width: auto !important;
+  height: auto !important;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  animation: pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.cutin-gm-dismiss {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 4 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 10px 20px !important;
+  background: rgba(200, 30, 30, 0.9) !important;
+  border: 2px solid #fff !important;
+  color: #fff !important;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px !important;
+  transition: all 0.2s ease;
+  pointer-events: all !important;
+}
+
+.cutin-gm-dismiss:hover {
+  background: rgba(255, 50, 50, 1) !important;
+  transform: scale(1.05) !important;
+}
+
+/* -------------------------------------------- */
+/*  Animation Styles (5 Types)                  */
+/* -------------------------------------------- */
+
+/* Slide Right */
+.cutin-container.anim-slide-right .cutin-character {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-slide-right.animate-enter .cutin-character {
+  animation: slideInRight var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-slide-right .cutin-backdrop {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-slide-right.animate-enter .cutin-backdrop {
+  animation: slideInRight calc(var(--entrance-duration) * 0.8) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-slide-right .cutin-text {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-slide-right.animate-enter .cutin-text {
+  animation: slideInLeft var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Slide Left */
+.cutin-container.anim-slide-left .cutin-character {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-slide-left.animate-enter .cutin-character {
+  animation: slideInFromLeft var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-slide-left .cutin-backdrop {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-slide-left.animate-enter .cutin-backdrop {
+  animation: slideInFromLeft calc(var(--entrance-duration) * 0.8) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-slide-left .cutin-text {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-slide-left.animate-enter .cutin-text {
+  animation: slideInFromRight var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Fade */
+.cutin-container.anim-fade .cutin-character,
+.cutin-container.anim-fade .cutin-backdrop,
+.cutin-container.anim-fade .cutin-text {
+  opacity: 0;
+}
+
+.cutin-container.anim-fade.animate-enter .cutin-character {
+  animation: fadeIn var(--entrance-duration) ease-out forwards;
+}
+
+.cutin-container.anim-fade.animate-enter .cutin-backdrop {
+  animation: fadeIn calc(var(--entrance-duration) * 0.6) ease-out forwards;
+}
+
+.cutin-container.anim-fade.animate-enter .cutin-text {
+  animation: fadeIn calc(var(--entrance-duration) * 0.8) ease-out forwards 0.2s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Zoom */
+.cutin-container.anim-zoom .cutin-character,
+.cutin-container.anim-zoom .cutin-backdrop,
+.cutin-container.anim-zoom .cutin-text {
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+.cutin-container.anim-zoom.animate-enter .cutin-character {
+  animation: zoomIn var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-zoom.animate-enter .cutin-backdrop {
+  animation: zoomIn calc(var(--entrance-duration) * 0.8) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-zoom.animate-enter .cutin-text {
+  animation: zoomIn calc(var(--entrance-duration) * 0.9) cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s;
+}
+
+@keyframes zoomIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Diagonal Sweep */
+.cutin-container.anim-diagonal-sweep .cutin-character {
+  transform: translate(100%, -100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-diagonal-sweep.animate-enter .cutin-character {
+  animation: diagonalSweepIn var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-diagonal-sweep .cutin-backdrop {
+  transform: translate(100%, -100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-diagonal-sweep.animate-enter .cutin-backdrop {
+  animation: diagonalSweepIn calc(var(--entrance-duration) * 0.8) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-container.anim-diagonal-sweep .cutin-text {
+  transform: translate(-100%, 100%);
+  opacity: 0;
+}
+
+.cutin-container.anim-diagonal-sweep.animate-enter .cutin-text {
+  animation: diagonalSweepInReverse var(--entrance-duration) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes diagonalSweepIn {
+  from {
+    transform: translate(100%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes diagonalSweepInReverse {
+  from {
+    transform: translate(-100%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+/* -------------------------------------------- */
+/*  Exit Animations (Universal)                 */
+/* -------------------------------------------- */
+
+.cutin-container.animate-exit {
+  animation: fadeOut var(--exit-duration) ease-out forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}

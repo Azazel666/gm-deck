@@ -1,0 +1,151 @@
+<form class="cutin-config-form">
+
+  {{!-- Header Section --}}
+  <div class="form-group">
+    <label>Cutin Name</label>
+    <input type="text" name="cutinName" value="{{cutinName}}" placeholder="Enter cutin name" />
+  </div>
+
+  {{!-- Preset Management --}}
+  <div class="form-group preset-section">
+    <label>Load Preset</label>
+    <div class="preset-controls">
+      <select id="preset-selector">
+        <option value="">-- Select a Preset --</option>
+        {{#each presets}}
+        <option value="{{id}}">{{name}}{{#if isDefault}} (Default){{/if}}</option>
+        {{/each}}
+      </select>
+      <button type="button" data-action="savePreset"><i class="fas fa-save"></i> Save as Preset</button>
+    </div>
+  </div>
+
+  <hr />
+
+  {{!-- Character Image Section --}}
+  <div class="form-group">
+    <label>Character Image</label>
+    <div class="image-select">
+      {{#if config.characterImage}}
+      <img src="{{config.characterImage}}" alt="Character Preview" class="image-preview" />
+      {{else}}
+      <div class="image-placeholder">No image selected</div>
+      {{/if}}
+      <button type="button" data-action="selectImage"><i class="fas fa-image"></i> Select Image</button>
+    </div>
+  </div>
+
+  {{!-- Backdrop Style --}}
+  <div class="form-group">
+    <label>Backdrop Style</label>
+    <select name="backdropStyle">
+      {{#each backdropStyles}}
+      <option value="{{value}}" {{#if (eq value ../config.backdropStyle)}}selected{{/if}}>{{label}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  {{!-- Text Layers --}}
+  <div class="form-group">
+    <label>Text Overlays</label>
+    <div class="text-layers">
+      {{#each config.textLayers}}
+      <div class="text-layer" data-index="{{@index}}">
+        <div class="text-layer-header">
+          <span>Text Layer {{@index}}</span>
+          <button type="button" data-action="removeTextLayer" data-index="{{@index}}">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="text-layer-fields">
+          <input type="text" name="textLayer.{{@index}}.text" value="{{text}}" placeholder="Text" />
+          <select name="textLayer.{{@index}}.font">
+            {{#each ../fonts}}
+            <option value="{{this}}" {{#if (eq this ../font)}}selected{{/if}}>{{this}}</option>
+            {{/each}}
+          </select>
+          <input type="number" name="textLayer.{{@index}}.size" value="{{size}}" min="12" max="120" style="width: 70px;" />
+          <input type="color" name="textLayer.{{@index}}.color" value="{{color}}" />
+          <select name="textLayer.{{@index}}.position">
+            {{#each ../textPositions}}
+            <option value="{{value}}" {{#if (eq value ../position)}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <label class="checkbox-label">
+            <input type="checkbox" name="textLayer.{{@index}}.hasBackground" {{#if hasBackground}}checked{{/if}} />
+            Background
+          </label>
+        </div>
+      </div>
+      {{/each}}
+      <button type="button" data-action="addTextLayer" class="add-text-btn">
+        <i class="fas fa-plus"></i> Add Text Layer
+      </button>
+    </div>
+  </div>
+
+  {{!-- Animation Settings --}}
+  <div class="form-group">
+    <label>Animation Style</label>
+    <select name="animationStyle">
+      {{#each animationStyles}}
+      <option value="{{value}}" {{#if (eq value ../config.animationStyle)}}selected{{/if}}>{{label}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Entrance Duration (ms)</label>
+      <input type="number" name="duration" value="{{config.duration}}" min="100" max="3000" step="100" />
+    </div>
+    <div class="form-group">
+      <label>Exit Duration (ms)</label>
+      <input type="number" name="exitDuration" value="{{config.exitDuration}}" min="100" max="2000" step="100" />
+    </div>
+  </div>
+
+  {{!-- Dismissal Settings --}}
+  <div class="form-group">
+    <label>Dismissal Mode</label>
+    <select name="dismissalMode">
+      {{#each dismissalModes}}
+      <option value="{{value}}" {{#if (eq value ../config.dismissalMode)}}selected{{/if}}>{{label}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Auto-Dismiss Delay (ms)</label>
+    <input type="number" name="autoDismissDelay" value="{{config.autoDismissDelay}}" min="1000" max="10000" step="500" />
+    <small>Used when dismissal mode is set to Auto-Dismiss</small>
+  </div>
+
+  {{!-- Audience Selection --}}
+  <div class="form-group">
+    <label>Audience</label>
+    <div class="audience-select">
+      <label class="radio-label">
+        <input type="radio" name="audience" value="all" {{#if (eq config.audience "all")}}checked{{/if}} />
+        All Players
+      </label>
+      {{!-- Specific player targeting can be added here if needed --}}
+    </div>
+  </div>
+
+  <hr />
+
+  {{!-- Action Buttons --}}
+  <div class="form-actions">
+    <button type="button" data-action="preview" class="preview-btn">
+      <i class="fas fa-eye"></i> Preview
+    </button>
+    <button type="button" data-action="save" class="save-btn">
+      <i class="fas fa-check"></i> {{#if isEditing}}Update{{else}}Save to Deck{{/if}}
+    </button>
+    <button type="button" data-action="close" class="cancel-btn">
+      <i class="fas fa-times"></i> Cancel
+    </button>
+  </div>
+
+</form>
