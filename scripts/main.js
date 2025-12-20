@@ -49,16 +49,35 @@ function registerSettings() {
     }
   });
 
+  game.settings.register(MODULE_ID, 'buttonsPerRow', {
+    name: `${MODULE_ID}.settings.buttonsPerRow.name`,
+    hint: `${MODULE_ID}.settings.buttonsPerRow.hint`,
+    scope: 'client',
+    config: true,
+    type: Number,
+    range: {
+      min: 4,
+      max: 8,
+      step: 1
+    },
+    default: 5,
+    onChange: () => {
+      if (gmDeckApp?.rendered) {
+        gmDeckApp.render();
+      }
+    }
+  });
+
   game.settings.register(MODULE_ID, 'cutinDismissalMode', {
-    name: 'Cinematic Cutin Dismissal Mode',
-    hint: 'How players dismiss cinematic cutins. Can be overridden per-cutin.',
+    name: `${MODULE_ID}.settings.cutinDismissalMode.name`,
+    hint: `${MODULE_ID}.settings.cutinDismissalMode.hint`,
     scope: 'world',
     config: true,
     type: String,
     choices: {
-      'user-dismiss': 'Players Click to Dismiss',
-      'gm-dismiss': 'GM Controls Dismissal',
-      'auto-dismiss': 'Auto-Dismiss After Duration'
+      'user-dismiss': `${MODULE_ID}.settings.cutinDismissalMode.choices.user-dismiss`,
+      'gm-dismiss': `${MODULE_ID}.settings.cutinDismissalMode.choices.gm-dismiss`,
+      'auto-dismiss': `${MODULE_ID}.settings.cutinDismissalMode.choices.auto-dismiss`
     },
     default: 'user-dismiss'
   });

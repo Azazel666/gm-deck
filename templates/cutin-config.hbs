@@ -35,46 +35,123 @@
     </div>
   </div>
 
+  {{!-- Image Positioning --}}
+  <div class="form-group">
+    <label>Image Horizontal Align</label>
+    <select name="imageHorizontalAlign">
+      <option value="right" {{#if (eq config.imageHorizontalAlign "right")}}selected{{/if}}>Right</option>
+      <option value="left" {{#if (eq config.imageHorizontalAlign "left")}}selected{{/if}}>Left</option>
+      <option value="center" {{#if (eq config.imageHorizontalAlign "center")}}selected{{/if}}>Center</option>
+    </select>
+  </div>
+
   {{!-- Backdrop Style --}}
   <div class="form-group">
     <label>Backdrop Style</label>
-    <select name="backdropStyle">
+    <select name="backdropStyle" id="backdropStyle">
       {{#each backdropStyles}}
-      <option value="{{value}}" {{#if (eq value ../config.backdropStyle)}}selected{{/if}}>{{label}}</option>
+      <option value="{{value}}" data-colors="{{colors}}" {{#if (eq value ../config.backdropStyle)}}selected{{/if}}>{{label}}</option>
       {{/each}}
     </select>
   </div>
+
+  {{!-- Color Customization (shown only for backdrops that support colors) --}}
+  {{#unless (eq backdropColors "none")}}
+  <div class="form-group">
+    <label class="checkbox-label">
+      <input type="checkbox" id="customizeColors" {{#if config.backdropPrimaryColor}}checked{{/if}} />
+      Customize Backdrop Colors
+    </label>
+  </div>
+
+  <div class="color-customization" style="display: {{#if config.backdropPrimaryColor}}block{{else}}none{{/if}}; margin-left: 1.5em;">
+    <div class="form-row">
+      {{!-- Primary color (shown for 'primary' and 'both') --}}
+      <div class="form-group">
+        <label>Primary Color</label>
+        <input type="color" name="backdropPrimaryColor" value="{{#if config.backdropPrimaryColor}}{{config.backdropPrimaryColor}}{{else}}#cc0000{{/if}}" />
+      </div>
+      {{!-- Secondary color (shown only for 'both') --}}
+      {{#if (eq backdropColors "both")}}
+      <div class="form-group">
+        <label>Secondary Color</label>
+        <input type="color" name="backdropSecondaryColor" value="{{#if config.backdropSecondaryColor}}{{config.backdropSecondaryColor}}{{else}}#ff3333{{/if}}" />
+      </div>
+      {{/if}}
+    </div>
+    <button type="button" id="resetColors" style="font-size: 11px; padding: 4px 8px;">
+      <i class="fas fa-undo"></i> Reset to Defaults
+    </button>
+  </div>
+  {{/unless}}
 
   {{!-- Text Layers --}}
   <div class="form-group">
     <label>Text Overlays</label>
     <div class="text-layers">
       {{#each config.textLayers}}
-      <div class="text-layer" data-index="{{@index}}">
+      <div class="text-layer {{#unless isExpanded}}collapsed{{/unless}}" data-index="{{index}}" draggable="true">
         <div class="text-layer-header">
-          <span>Text Layer {{@index}}</span>
-          <button type="button" data-action="removeTextLayer" data-index="{{@index}}">
+          <i class="fas fa-grip-vertical drag-handle"></i>
+          <i class="fas fa-chevron-down collapse-icon"></i>
+          <span>Text Layer {{index}}</span>
+          <button type="button" data-action="removeTextLayer" data-index="{{index}}">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="text-layer-fields">
-          <input type="text" name="textLayer.{{@index}}.text" value="{{text}}" placeholder="Text" />
-          <select name="textLayer.{{@index}}.font">
-            {{#each ../fonts}}
-            <option value="{{this}}" {{#if (eq this ../font)}}selected{{/if}}>{{this}}</option>
-            {{/each}}
-          </select>
-          <input type="number" name="textLayer.{{@index}}.size" value="{{size}}" min="12" max="120" style="width: 70px;" />
-          <input type="color" name="textLayer.{{@index}}.color" value="{{color}}" />
-          <select name="textLayer.{{@index}}.position">
-            {{#each ../textPositions}}
-            <option value="{{value}}" {{#if (eq value ../position)}}selected{{/if}}>{{label}}</option>
-            {{/each}}
-          </select>
-          <label class="checkbox-label">
-            <input type="checkbox" name="textLayer.{{@index}}.hasBackground" {{#if hasBackground}}checked{{/if}} />
-            Background
-          </label>
+        <div class="text-layer-fields {{#unless isExpanded}}collapsed{{/unless}}">
+          <div class="text-layer-field">
+            <label>Text</label>
+            <textarea name="textLayer.{{index}}.text" placeholder="Enter text..." rows="2">{{text}}</textarea>
+          </div>
+          <div class="text-layer-field-row">
+            <div class="text-layer-field">
+              <label>Font</label>
+              <select name="textLayer.{{index}}.font">
+                {{#each ../fonts}}
+                <option value="{{this}}" {{#if (eq this ../font)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+              </select>
+            </div>
+            <div class="text-layer-field">
+              <label>Size</label>
+              <input type="number" name="textLayer.{{index}}.size" value="{{size}}" min="12" max="120" />
+            </div>
+            <div class="text-layer-field">
+              <label>Color</label>
+              <input type="color" name="textLayer.{{index}}.color" value="{{color}}" />
+            </div>
+          </div>
+          <div class="text-layer-field">
+            <label>Position</label>
+            <select name="textLayer.{{index}}.position">
+              {{#each ../textPositions}}
+              <option value="{{value}}" {{#if (eq value ../position)}}selected{{/if}}>{{label}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="text-layer-field-row">
+            <div class="text-layer-field">
+              <label>Offset X (px)</label>
+              <input type="number" name="textLayer.{{index}}.offsetX" value="{{#if offsetX}}{{offsetX}}{{else}}0{{/if}}" step="10" />
+            </div>
+            <div class="text-layer-field">
+              <label>Offset Y (px)</label>
+              <input type="number" name="textLayer.{{index}}.offsetY" value="{{#if offsetY}}{{offsetY}}{{else}}0{{/if}}" step="10" />
+            </div>
+          </div>
+          <div class="text-layer-field-row">
+            <label class="checkbox-label">
+              <input type="checkbox" name="textLayer.{{index}}.hasBackground" {{#if hasBackground}}checked{{/if}} />
+              Background
+            </label>
+            {{#if hasBackground}}
+            <div class="text-layer-field">
+              <label>Background Color</label>
+              <input type="color" name="textLayer.{{index}}.backgroundColor" value="{{#if backgroundColor}}{{backgroundColor}}{{else}}#000000{{/if}}" />
+            </div>
+            {{/if}}
+          </div>
         </div>
       </div>
       {{/each}}
@@ -126,10 +203,21 @@
     <label>Audience</label>
     <div class="audience-select">
       <label class="radio-label">
-        <input type="radio" name="audience" value="all" {{#if (eq config.audience "all")}}checked{{/if}} />
+        <input type="radio" name="audienceMode" value="all" {{#if (eq config.audience "all")}}checked{{/if}} id="audience-all" />
         All Players
       </label>
-      {{!-- Specific player targeting can be added here if needed --}}
+      <label class="radio-label">
+        <input type="radio" name="audienceMode" value="specific" {{#unless (eq config.audience "all")}}checked{{/unless}} id="audience-specific" />
+        Specific Players
+      </label>
+      <div id="player-selection" style="margin-top: 0.5em; padding-left: 1.5em; display: {{#if (eq config.audience "all")}}none{{else}}block{{/if}};">
+        {{#each players}}
+        <label style="display: block; margin: 0.3em 0;">
+          <input type="checkbox" name="player-{{id}}" value="{{id}}" {{#if selected}}checked{{/if}} />
+          {{name}}
+        </label>
+        {{/each}}
+      </div>
     </div>
   </div>
 

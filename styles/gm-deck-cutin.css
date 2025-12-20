@@ -61,34 +61,13 @@
   overflow: visible !important;
 }
 
-/* Diagonal Red (JRPG Style) */
-.backdrop-diagonal-red {
-  background: linear-gradient(135deg,
-    #1a1a1a 0%,
-    #cc0000 30%,
-    #ff3333 50%,
-    #cc0000 70%,
-    #1a1a1a 100%);
+/* Diagonal Solid - Diagonal shape with solid color */
+.backdrop-solid-color {
+  background: var(--backdrop-primary, #cc0000);
   clip-path: polygon(0 0, 100% 15%, 100% 85%, 0 100%);
 }
 
-.backdrop-diagonal-red::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 10px,
-    rgba(0,0,0,0.1) 10px,
-    rgba(0,0,0,0.1) 20px
-  );
-}
-
-/* Banner Black */
+/* Banner Black - No customizable colors */
 .backdrop-banner-black {
   background: linear-gradient(180deg,
     transparent 0%,
@@ -103,14 +82,14 @@
   border-bottom: 3px solid #d4af37;
 }
 
-/* Squares Pattern */
-.backdrop-squares-gold {
-  background: #0a0a0a;
+/* Geometric Pattern - Diamond/square pattern with two colors */
+.backdrop-geometric-pattern {
+  background: var(--backdrop-secondary, #1a1a1a);
   background-image:
-    linear-gradient(45deg, #d4af37 25%, transparent 25%),
-    linear-gradient(-45deg, #d4af37 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #d4af37 75%),
-    linear-gradient(-45deg, transparent 75%, #d4af37 75%);
+    linear-gradient(45deg, var(--backdrop-primary, #d4af37) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--backdrop-primary, #d4af37) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--backdrop-primary, #d4af37) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--backdrop-primary, #d4af37) 75%);
   background-size: 40px 40px;
   background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
   opacity: 0.95;
@@ -119,27 +98,167 @@
 /* Vertical Split */
 .backdrop-vertical-split {
   background: linear-gradient(90deg,
-    #1a1a2e 0%,
-    #16213e 40%,
-    #0f3460 50%,
-    #16213e 60%,
-    #1a1a2e 100%
+    rgba(0, 0, 0, 0.9) 0%,
+    color-mix(in srgb, var(--backdrop-primary, #16213e) 80%, black) 40%,
+    var(--backdrop-primary, #16213e) 50%,
+    color-mix(in srgb, var(--backdrop-primary, #16213e) 80%, black) 60%,
+    rgba(0, 0, 0, 0.9) 100%
   );
 }
 
 /* Gradient Burst */
 .backdrop-gradient-burst {
   background: radial-gradient(ellipse at center,
-    rgba(138, 43, 226, 0.8) 0%,
-    rgba(75, 0, 130, 0.6) 40%,
+    color-mix(in srgb, var(--backdrop-primary, #8a2be2) 80%, transparent) 0%,
+    color-mix(in srgb, var(--backdrop-primary, #8a2be2) 60%, transparent) 40%,
     rgba(0, 0, 0, 0.9) 100%
   );
 }
 
 /* Minimal Fade */
 .backdrop-minimal-fade {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--backdrop-primary, #000000) 60%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 100px color-mix(in srgb, var(--backdrop-primary, #000000) 15%, transparent);
+}
+
+/* -------------------------------------------- */
+/*  Game UI Backdrops                           */
+/* -------------------------------------------- */
+
+/* Ornate Frame - Decorative frame */
+.backdrop-ornate-frame {
+  background: rgba(20, 20, 20, 0.85);
+  border: 4px solid var(--backdrop-primary, #FFD700);
+  box-shadow:
+    inset 0 0 50px color-mix(in srgb, var(--backdrop-primary, #FFD700) 20%, transparent),
+    0 0 20px color-mix(in srgb, var(--backdrop-primary, #FFD700) 30%, transparent);
+}
+
+.backdrop-ornate-frame::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 2px solid color-mix(in srgb, var(--backdrop-primary, #FFD700) 40%, transparent);
+  pointer-events: none;
+}
+
+/* Corner Brackets - Sci-fi tactical UI corners */
+.backdrop-corner-brackets {
+  background: rgba(10, 15, 25, 0.9);
+  position: relative;
+}
+
+.backdrop-corner-brackets::before,
+.backdrop-corner-brackets::after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 3px solid var(--backdrop-primary, #00ffff);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--backdrop-primary, #00ffff) 80%, transparent);
+}
+
+.backdrop-corner-brackets::before {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+  clip-path: polygon(0 0, 0 100%, 3px 100%, 3px 3px, 100% 3px, 100% 0);
+}
+
+.backdrop-corner-brackets::after {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+  clip-path: polygon(100% 100%, 100% 0, calc(100% - 3px) 0, calc(100% - 3px) calc(100% - 3px), 0 calc(100% - 3px), 0 100%);
+}
+
+/* -------------------------------------------- */
+/*  Angular Mask Backdrop (Character Cutout)   */
+/* -------------------------------------------- */
+
+/* Angular Mask - Character clipped to middle angular section */
+.backdrop-angular-mask {
+  background: transparent;
+}
+
+/* Secondary color border - slightly larger for 3-4px line */
+.backdrop-angular-mask::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--backdrop-secondary, #ffffff);
+  clip-path: polygon(
+    0 32.7%, 100% 29.7%, 100% 70.3%, 0 67.3%
+  );
+  z-index: 1;
+}
+
+/* Main area - primary color fill */
+.backdrop-angular-mask::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--backdrop-primary, #cc0000);
+  clip-path: polygon(
+    0 33%, 100% 30%, 100% 70%, 0 67%
+  );
+  z-index: 2;
+}
+
+/* Target character when angular-mask backdrop is active */
+.cutin-container[data-backdrop="angular-mask"] .cutin-character {
+  /* Character container - full screen for clip-path to work */
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  clip-path: polygon(
+    0 33%, 100% 30%, 100% 70%, 0 67%
+  ) !important;
+  -webkit-clip-path: polygon(
+    0 33%, 100% 30%, 100% 70%, 0 67%
+  ) !important;
+  overflow: hidden !important;
+  z-index: 3 !important;
+  padding: 0 5% !important;
+}
+
+/* Horizontal alignment options for angular-mask */
+.cutin-container[data-backdrop="angular-mask"] .cutin-character.align-h-left {
+  justify-content: flex-start !important;
+}
+
+.cutin-container[data-backdrop="angular-mask"] .cutin-character.align-h-center {
+  justify-content: center !important;
+}
+
+.cutin-container[data-backdrop="angular-mask"] .cutin-character.align-h-right {
+  justify-content: flex-end !important;
+}
+
+.cutin-container[data-backdrop="angular-mask"] .cutin-character img {
+  /* Scale down character to 45% to fit better within main area */
+  transform: scale(0.45) !important;
+  transform-origin: center center !important;
+  max-height: 100vh !important;
+  max-width: none !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 /* -------------------------------------------- */
@@ -148,21 +267,56 @@
 
 .cutin-character {
   position: absolute !important;
-  right: 0 !important;
-  top: 0 !important;
   height: 100% !important;
   width: 50% !important;
   z-index: 2;
   display: flex;
-  align-items: center;
+  overflow: visible !important;
+}
+
+/* Horizontal alignment */
+.cutin-character.align-h-left {
+  left: 0 !important;
+  right: auto !important;
+  justify-content: flex-start;
+  padding-left: 5%;
+}
+
+.cutin-character.align-h-center {
+  left: 25% !important;
+  right: 25% !important;
+  justify-content: center;
+}
+
+.cutin-character.align-h-right {
+  left: auto !important;
+  right: 0 !important;
   justify-content: flex-end;
   padding-right: 5%;
-  overflow: visible !important;
+}
+
+/* Vertical alignment */
+.cutin-character.align-v-top {
+  top: 0 !important;
+  bottom: auto !important;
+  align-items: flex-start;
+}
+
+.cutin-character.align-v-center {
+  top: 0 !important;
+  bottom: auto !important;
+  align-items: center;
+}
+
+.cutin-character.align-v-bottom {
+  top: auto !important;
+  bottom: 0 !important;
+  align-items: flex-end;
 }
 
 /* Override Foundry's default image sizing */
 .cutin-character img {
-  max-height: 90vh !important;
+  max-height: 100vh !important;
   max-width: none !important;
   width: auto !important;
   height: auto !important;
@@ -191,64 +345,79 @@
   text-transform: uppercase;
   letter-spacing: 4px;
   text-shadow: 4px 4px 8px rgba(0,0,0,0.9);
-  white-space: nowrap;
+  white-space: pre-line;
+  display: inline-block;
+  max-width: 80%;
+  line-height: 0.85;
+  vertical-align: top;
 }
 
 .cutin-text.has-bg {
-  padding: 12px 24px;
-  background: rgba(0, 0, 0, 0.7);
+  padding: 6px 24px;
   clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  width: auto;
+  display: inline-block;
+  overflow: hidden;
 }
 
-/* Text Positions (9 options) */
+/* Text Positions (9 options) with offset support */
+.cutin-text {
+  --offset-x: 0px;
+  --offset-y: 0px;
+}
+
 .text-top-left {
   top: 10%;
   left: 5%;
+  transform: translate(var(--offset-x), var(--offset-y)) !important;
 }
 
 .text-top-center {
   top: 10%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(calc(-50% + var(--offset-x)), var(--offset-y)) !important;
 }
 
 .text-top-right {
   top: 10%;
   right: 5%;
+  transform: translate(calc(-1 * var(--offset-x)), var(--offset-y)) !important;
 }
 
 .text-middle-left {
   top: 50%;
   left: 5%;
-  transform: translateY(-50%);
+  transform: translate(var(--offset-x), calc(-50% + var(--offset-y))) !important;
 }
 
 .text-middle-center {
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(calc(-50% + var(--offset-x)), calc(-50% + var(--offset-y))) !important;
 }
 
 .text-middle-right {
   top: 50%;
   right: 5%;
-  transform: translateY(-50%);
+  transform: translate(calc(-1 * var(--offset-x)), calc(-50% + var(--offset-y))) !important;
 }
 
 .text-bottom-left {
   bottom: 10%;
   left: 5%;
+  transform: translate(var(--offset-x), calc(-1 * var(--offset-y))) !important;
 }
 
 .text-bottom-center {
   bottom: 10%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(calc(-50% + var(--offset-x)), calc(-1 * var(--offset-y))) !important;
 }
 
 .text-bottom-right {
   bottom: 10%;
   right: 5%;
+  transform: translate(calc(-1 * var(--offset-x)), calc(-1 * var(--offset-y))) !important;
 }
 
 /* -------------------------------------------- */
@@ -260,11 +429,13 @@
   bottom: 20px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  z-index: 4 !important;
+  z-index: 100 !important;
   width: auto !important;
   height: auto !important;
   color: rgba(255,255,255,0.6);
   font-size: 14px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
   animation: pulse 2s ease-in-out infinite;
   pointer-events: none;
 }
@@ -282,7 +453,7 @@
   position: absolute !important;
   top: 20px !important;
   right: 20px !important;
-  z-index: 4 !important;
+  z-index: 100 !important;
   width: auto !important;
   height: auto !important;
   padding: 10px 20px !important;

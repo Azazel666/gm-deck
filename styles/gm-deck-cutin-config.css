@@ -22,7 +22,7 @@
   max-height: 90vh !important;
 }
 
-.cutin-config-form {
+.gm-deck-cutin-config .cutin-config-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -31,34 +31,34 @@
 }
 
 /* Form Groups */
-.form-group {
+.gm-deck-cutin-config .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.form-group label {
+.gm-deck-cutin-config .form-group label {
   font-weight: 600;
   font-size: 13px;
   color: #ddd;
 }
 
-.form-group small {
+.gm-deck-cutin-config .form-group small {
   font-size: 11px;
   color: #999;
   font-style: italic;
 }
 
-.form-row {
+.gm-deck-cutin-config .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
 
 /* Inputs */
-.cutin-config-form input[type="text"],
-.cutin-config-form input[type="number"],
-.cutin-config-form select {
+.gm-deck-cutin-config .cutin-config-form input[type="text"],
+.gm-deck-cutin-config .cutin-config-form input[type="number"],
+.gm-deck-cutin-config .cutin-config-form select {
   padding: 6px 10px;
   background: #1a1a1a;
   border: 1px solid #444;
@@ -67,15 +67,15 @@
   font-size: 13px;
 }
 
-.cutin-config-form input[type="text"]:focus,
-.cutin-config-form input[type="number"]:focus,
-.cutin-config-form select:focus {
+.gm-deck-cutin-config .cutin-config-form input[type="text"]:focus,
+.gm-deck-cutin-config .cutin-config-form input[type="number"]:focus,
+.gm-deck-cutin-config .cutin-config-form select:focus {
   outline: none;
   border-color: #7c5edc;
   box-shadow: 0 0 0 2px rgba(124, 94, 220, 0.2);
 }
 
-.cutin-config-form input[type="color"] {
+.gm-deck-cutin-config .cutin-config-form input[type="color"] {
   height: 32px;
   border-radius: 4px;
   border: 1px solid #444;
@@ -83,16 +83,16 @@
 }
 
 /* Preset Section */
-.preset-section .preset-controls {
+.gm-deck-cutin-config .preset-section .preset-controls {
   display: flex;
   gap: 8px;
 }
 
-.preset-section select {
+.gm-deck-cutin-config .preset-section select {
   flex: 1;
 }
 
-.preset-section button {
+.gm-deck-cutin-config .preset-section button {
   white-space: nowrap;
   padding: 6px 12px;
   background: #3a3a3a;
@@ -104,13 +104,13 @@
   transition: all 0.2s ease;
 }
 
-.preset-section button:hover {
+.gm-deck-cutin-config .preset-section button:hover {
   background: #4a4a4a;
   border-color: #666;
 }
 
 /* Image Section */
-.image-select {
+.gm-deck-cutin-config .image-select {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,7 +138,7 @@
   display: block !important;
 }
 
-.image-placeholder {
+.gm-deck-cutin-config .image-placeholder {
   width: 80px;
   height: 80px;
   min-width: 80px;
@@ -157,7 +157,7 @@
   padding: 8px;
 }
 
-.image-select button {
+.gm-deck-cutin-config .image-select button {
   padding: 8px 16px;
   background: #4a4a8a;
   border: none;
@@ -168,25 +168,40 @@
   transition: all 0.2s ease;
 }
 
-.image-select button:hover {
+.gm-deck-cutin-config .image-select button:hover {
   background: #5a5a9a;
 }
 
 /* Text Layers */
-.text-layers {
+.gm-deck-cutin-config .text-layers {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.text-layer {
+.gm-deck-cutin-config .text-layer {
   padding: 12px;
   background: #1a1a1a;
   border-left: 3px solid #7c5edc;
   border-radius: 4px;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
 }
 
-.text-layer-header {
+.gm-deck-cutin-config .text-layer[draggable="true"] {
+  cursor: move;
+}
+
+.gm-deck-cutin-config .text-layer.dragging {
+  opacity: 0.5;
+  border-left-color: #a78bfa;
+}
+
+.gm-deck-cutin-config .text-layer.drag-over {
+  border-top: 3px solid #7c5edc;
+  border-top-style: dashed;
+}
+
+.gm-deck-cutin-config .text-layer-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -194,9 +209,30 @@
   font-weight: 600;
   color: #bbb;
   font-size: 12px;
+  cursor: pointer;
+  user-select: none;
 }
 
-.text-layer-header button {
+.gm-deck-cutin-config .text-layer-header:hover {
+  color: #ddd;
+}
+
+.gm-deck-cutin-config .text-layer-header .collapse-icon {
+  margin-right: 8px;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: #7c5edc;
+}
+
+.gm-deck-cutin-config .text-layer.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.gm-deck-cutin-config .text-layer-header span {
+  flex: 1;
+}
+
+.gm-deck-cutin-config .text-layer-header button {
   background: none;
   border: none;
   color: #f87171;
@@ -206,18 +242,76 @@
   transition: color 0.2s ease;
 }
 
-.text-layer-header button:hover {
+.gm-deck-cutin-config .text-layer-header button:hover {
   color: #ff5555;
 }
 
-.text-layer-fields {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto 1fr auto;
-  gap: 6px;
-  align-items: center;
+.gm-deck-cutin-config .text-layer-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  max-height: 1000px;
+  opacity: 1;
 }
 
-.checkbox-label {
+.gm-deck-cutin-config .text-layer-fields.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.gm-deck-cutin-config .text-layer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gm-deck-cutin-config .text-layer-field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gm-deck-cutin-config .text-layer-field input,
+.gm-deck-cutin-config .text-layer-field select,
+.gm-deck-cutin-config .text-layer-field textarea {
+  width: 100%;
+}
+
+.gm-deck-cutin-config .text-layer-field textarea {
+  padding: 6px 10px;
+  background: #0a0a0a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 40px;
+}
+
+.gm-deck-cutin-config .text-layer-field textarea:focus {
+  outline: none;
+  border-color: #7c5edc;
+  box-shadow: 0 0 0 2px rgba(124, 94, 220, 0.2);
+}
+
+.gm-deck-cutin-config .text-layer-field-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.gm-deck-cutin-config .text-layer-field-row > * {
+  flex: 1;
+}
+
+.gm-deck-cutin-config .checkbox-label {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -226,11 +320,11 @@
   white-space: nowrap;
 }
 
-.checkbox-label input[type="checkbox"] {
+.gm-deck-cutin-config .checkbox-label input[type="checkbox"] {
   margin: 0;
 }
 
-.add-text-btn {
+.gm-deck-cutin-config .add-text-btn {
   padding: 10px;
   background: #2a2a4a;
   border: 2px dashed #555;
@@ -241,20 +335,20 @@
   transition: all 0.2s ease;
 }
 
-.add-text-btn:hover {
+.gm-deck-cutin-config .add-text-btn:hover {
   background: #3a3a5a;
   border-color: #7c5edc;
   color: #bbb;
 }
 
 /* Audience Section */
-.audience-select {
+.gm-deck-cutin-config .audience-select {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.radio-label {
+.gm-deck-cutin-config .radio-label {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -263,13 +357,13 @@
   cursor: pointer;
 }
 
-.radio-label input[type="radio"] {
+.gm-deck-cutin-config .radio-label input[type="radio"] {
   margin: 0;
   cursor: pointer;
 }
 
 /* Action Buttons */
-.form-actions {
+.gm-deck-cutin-config .form-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
@@ -277,7 +371,7 @@
   border-top: 1px solid #444;
 }
 
-.form-actions button {
+.gm-deck-cutin-config .form-actions button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
@@ -290,35 +384,35 @@
   gap: 6px;
 }
 
-.preview-btn {
+.gm-deck-cutin-config .preview-btn {
   background: #3a3a3a;
   color: #ddd;
 }
 
-.preview-btn:hover {
+.gm-deck-cutin-config .preview-btn:hover {
   background: #4a4a4a;
 }
 
-.save-btn {
+.gm-deck-cutin-config .save-btn {
   background: #4ade80;
   color: #000;
 }
 
-.save-btn:hover {
+.gm-deck-cutin-config .save-btn:hover {
   background: #5ef090;
 }
 
-.cancel-btn {
+.gm-deck-cutin-config .cancel-btn {
   background: #555;
   color: #ddd;
 }
 
-.cancel-btn:hover {
+.gm-deck-cutin-config .cancel-btn:hover {
   background: #666;
 }
 
 /* Horizontal Rule */
-.cutin-config-form hr {
+.gm-deck-cutin-config .cutin-config-form hr {
   border: none;
   border-top: 1px solid #444;
   margin: 5px 0;

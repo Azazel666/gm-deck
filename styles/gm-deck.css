@@ -4,36 +4,37 @@
 /*  Main Container & Positioning                */
 /* -------------------------------------------- */
 
-.gm-deck {
+.application.gm-deck {
   font-family: var(--font-primary);
 }
 
-.gm-deck .window-header {
+.application.gm-deck > .window-header {
   cursor: move;
   background: linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 100%);
   border-bottom: 1px solid #555;
   padding: 6px 12px;
 }
 
-.gm-deck .window-header:hover {
+.application.gm-deck > .window-header:hover {
   background: linear-gradient(135deg, #5a5a5a 0%, #3a3a3a 100%);
 }
 
-.gm-deck .window-title {
+.application.gm-deck > .window-header .window-title {
   color: #ddd;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-.gm-deck .window-content {
+.application.gm-deck > .window-content {
   padding: 0;
 }
 
 .gm-deck-container {
   background: rgba(30, 30, 30, 0.95);
   min-width: 60px;
-  max-width: 300px;
+  width: var(--panel-width, 300px);
+  max-width: none;
 }
 
 /* -------------------------------------------- */
@@ -154,8 +155,8 @@
 /* -------------------------------------------- */
 
 .gm-deck-items {
-  display: flex !important;
-  flex-wrap: wrap;
+  display: grid !important;
+  grid-template-columns: repeat(var(--buttons-per-row, 5), 1fr);
   gap: 6px;
   visibility: visible !important;
 }
@@ -177,6 +178,7 @@
   background: #444;
   min-width: 40px;
   min-height: 40px;
+  box-sizing: border-box;
 }
 
 .gm-deck-item:hover {

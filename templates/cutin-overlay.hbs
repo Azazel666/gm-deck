@@ -4,7 +4,7 @@
   <div class="cutin-backdrop backdrop-{{backdropStyle}}"></div>
 
   {{!-- Character Image --}}
-  <div class="cutin-character">
+  <div class="cutin-character align-v-{{imageVerticalAlign}} align-h-{{imageHorizontalAlign}}">
     <img src="{{characterImage}}" alt="Character" />
   </div>
 
@@ -12,8 +12,8 @@
   <div class="cutin-text-layers">
     {{#each textLayers}}
     <div class="cutin-text text-{{position}} {{#if hasBackground}}has-bg{{/if}}"
-         style="font-family: {{font}}; font-size: {{size}}px; color: {{color}};">
-      {{text}}
+         style="font-family: {{font}}; font-size: {{size}}px; color: {{color}};{{#if hasBackground}} background: {{#if backgroundColor}}{{backgroundColor}}{{else}}rgba(0, 0, 0, 0.7){{/if}};{{/if}} --offset-x: {{#if offsetX}}{{offsetX}}{{else}}0{{/if}}px; --offset-y: {{#if offsetY}}{{offsetY}}{{else}}0{{/if}}px;">
+      {{{text}}}
     </div>
     {{/each}}
   </div>

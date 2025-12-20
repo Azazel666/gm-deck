@@ -13,6 +13,19 @@
       "buttonSize": {
         "name": "Button Size",
         "hint": "Size of the deck buttons in pixels."
+      },
+      "buttonsPerRow": {
+        "name": "Buttons Per Row",
+        "hint": "Number of buttons to display per row in the deck panel."
+      },
+      "cutinDismissalMode": {
+        "name": "Cinematic Cut-in Dismissal Mode",
+        "hint": "How players dismiss cinematic cut-ins. Can be overridden per cut-in.",
+        "choices": {
+          "user-dismiss": "Players Click to Dismiss",
+          "gm-dismiss": "GM Controls Dismissal",
+          "auto-dismiss": "Auto-Dismiss After Duration"
+        }
       }
     },
     "positions": {
@@ -26,7 +39,7 @@
     "sections": {
       "tiles": "Tiles",
       "macros": "Macros",
-      "cutins": "Cinematic Cutins"
+      "cutins": "Cinematic Cut-ins"
     },
     "messages": {
       "added": "Added \"{name}\" to GM Deck.",
@@ -46,7 +59,7 @@
       "removeContent": "Remove <strong>{name}</strong> from the deck?"
     },
     "cutin": {
-      "configTitle": "Configure Cinematic Cutin",
+      "configTitle": "Configure Cinematic Cut-in",
       "tabs": {
         "image": "Character Image",
         "backdrop": "Backdrop Style",
@@ -67,7 +80,10 @@
         "squares-gold": "Gold Squares",
         "vertical-split": "Vertical Split",
         "gradient-burst": "Gradient Burst",
-        "minimal-fade": "Minimal Fade"
+        "minimal-fade": "Minimal Fade",
+        "ornate-frame": "Ornate Frame (Fantasy)",
+        "corner-brackets": "Corner Brackets (Sci-Fi)",
+        "angular-mask": "Angular Mask (Character Cutout)"
       },
       "animationStyles": {
         "slide-right": "Slide from Right",
@@ -96,7 +112,7 @@
       "buttons": {
         "addText": "Add Text Layer",
         "removeText": "Remove",
-        "preview": "Preview Cutin",
+        "preview": "Preview Cut-in",
         "loadPreset": "Load Preset",
         "savePreset": "Save as Preset",
         "save": "Save to Deck",
@@ -109,13 +125,13 @@
       "messages": {
         "presetSaved": "Preset \"{name}\" saved successfully.",
         "presetLoaded": "Preset \"{name}\" loaded.",
-        "cutinAdded": "Cinematic cutin \"{name}\" added to deck.",
-        "cutinUpdated": "Cinematic cutin \"{name}\" updated.",
-        "invalidConfig": "Invalid cutin configuration.",
-        "cutinNotFound": "Cutin not found."
+        "cutinAdded": "Cinematic cut-in \"{name}\" added to deck.",
+        "cutinUpdated": "Cinematic cut-in \"{name}\" updated.",
+        "invalidConfig": "Invalid cut-in configuration.",
+        "cutinNotFound": "Cut-in not found."
       },
       "labels": {
-        "name": "Cutin Name",
+        "name": "Cut-in Name",
         "selectImage": "Select Character Image",
         "selectBackdrop": "Select Backdrop Style",
         "textContent": "Text Content",

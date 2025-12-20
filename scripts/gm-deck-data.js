@@ -57,13 +57,13 @@ export class GMDeckData {
       name = options.name ?? macro.name;
       icon = options.icon ?? macro.img ?? 'icons/svg/dice-target.svg';
     } else if (type === 'cinematic-cutin') {
-      // Cutins come with pre-configured options
+      // Cut-ins come with pre-configured options
       const config = options.config;
       if (!config || !config.characterImage) {
-        ui.notifications.error('Invalid cutin configuration.');
+        ui.notifications.error('Invalid cut-in configuration.');
         return null;
       }
-      name = options.name ?? 'Cinematic Cutin';
+      name = options.name ?? 'Cinematic Cut-in';
       icon = options.icon ?? config.characterImage;
 
       const newItem = {
@@ -157,11 +157,12 @@ export class GMDeckData {
   /**
    * Execute a deck item's action
    * @param {string} itemId - The deck item ID to execute
+   * @param {string|Array} audienceOverride - Optional audience override ('all' or array of user IDs)
    */
-  static async executeItem(itemId) {
+  static async executeItem(itemId, audienceOverride = null) {
     const items = this.getItems();
     const item = items.find(i => i.id === itemId);
-    
+
     if (!item) {
       ui.notifications.error('Item not found.');
       return;
@@ -172,7 +173,7 @@ export class GMDeckData {
     } else if (item.type === 'macro') {
       await this.executeMacro(item.targetId);
     } else if (item.type === 'cinematic-cutin') {
-      await this.executeCutin(itemId);
+      await this.executeCutin(itemId, audienceOverride);
     }
   }
 
@@ -227,18 +228,22 @@ export class GMDeckData {
   /**
    * Execute a cinematic cutin
    * @param {string} itemId - The deck item ID
+   * @param {string|Array} audienceOverride - Optional audience override ('all' or array of user IDs)
    */
-  static async executeCutin(itemId) {
+  static async executeCutin(itemId, audienceOverride = null) {
     const items = this.getItems();
     const item = items.find(i => i.id === itemId);
 
     if (!item || item.type !== 'cinematic-cutin') {
-      ui.notifications.error('Cutin not found.');
+      ui.notifications.error('Cut-in not found.');
       return;
     }
 
     const config = item.config;
     const cutinId = `cutin-${foundry.utils.randomID()}`;
+
+    // Use audience override if provided, otherwise use config audience
+    const targetAudience = audienceOverride !== null ? audienceOverride : config.audience;
 
     // Broadcast via socket
     game.socket.emit(`module.${MODULE_ID}`, {
@@ -246,20 +251,23 @@ export class GMDeckData {
       senderId: game.user.id,
       data: {
         config,
-        targetUsers: config.audience,
+        targetUsers: targetAudience,
         cutinId
       }
     });
 
     // Show locally for GM
-    if (config.audience === 'all' || config.audience.includes(game.user.id)) {
+    const shouldShowToGM = targetAudience === 'all' ||
+      (Array.isArray(targetAudience) && targetAudience.includes(game.user.id));
+
+    if (shouldShowToGM) {
       import('./gm-deck-cutin-overlay.js').then(({ GMDeckCutinOverlay }) => {
         const overlay = new GMDeckCutinOverlay(config, cutinId);
         overlay.render({ force: true });
       });
     }
 
-    console.log(`${MODULE_ID} | Executed cutin: ${item.name}`);
+    console.log(`${MODULE_ID} | Executed cut-in: ${item.name}`);
   }
 
   /**

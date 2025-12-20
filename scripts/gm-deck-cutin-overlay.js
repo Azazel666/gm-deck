@@ -47,11 +47,17 @@ export class GMDeckCutinOverlay extends HandlebarsApplicationMixin(ApplicationV2
   /* -------------------------------------------- */
 
   async _prepareContext(options) {
-    const dismissalMode = this.config.dismissalMode ?? game.settings.get(MODULE_ID, 'cutinDismissalMode');
+    // Treat empty string as null to fall back to module default
+    const configMode = (this.config.dismissalMode === '' || this.config.dismissalMode === null || this.config.dismissalMode === undefined)
+      ? null
+      : this.config.dismissalMode;
+    const dismissalMode = configMode ?? game.settings.get(MODULE_ID, 'cutinDismissalMode');
 
     return {
       characterImage: this.config.characterImage,
       backdropStyle: this.config.backdropStyle || 'minimal-fade',
+      imageVerticalAlign: this.config.imageVerticalAlign || 'center',
+      imageHorizontalAlign: this.config.imageHorizontalAlign || 'right',
       textLayers: this.config.textLayers || [],
       animationClass: `anim-${this.config.animationStyle || 'fade'}`,
       duration: this.config.duration || 800,
@@ -89,7 +95,19 @@ export class GMDeckCutinOverlay extends HandlebarsApplicationMixin(ApplicationV2
     el.style.setProperty('--entrance-duration', `${this.config.duration || 800}ms`);
     el.style.setProperty('--exit-duration', `${this.config.exitDuration || 400}ms`);
 
-    const dismissalMode = this.config.dismissalMode ?? game.settings.get(MODULE_ID, 'cutinDismissalMode');
+    // Set CSS custom properties for backdrop colors
+    if (this.config.backdropPrimaryColor) {
+      el.style.setProperty('--backdrop-primary', this.config.backdropPrimaryColor);
+    }
+    if (this.config.backdropSecondaryColor) {
+      el.style.setProperty('--backdrop-secondary', this.config.backdropSecondaryColor);
+    }
+
+    // Treat empty string as null to fall back to module default
+    const configMode = (this.config.dismissalMode === '' || this.config.dismissalMode === null || this.config.dismissalMode === undefined)
+      ? null
+      : this.config.dismissalMode;
+    const dismissalMode = configMode ?? game.settings.get(MODULE_ID, 'cutinDismissalMode');
 
     // User dismiss mode: click anywhere to dismiss
     if (dismissalMode === 'user-dismiss') {
