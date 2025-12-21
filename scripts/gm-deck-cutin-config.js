@@ -156,8 +156,22 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
         { value: 'bottom-right', label: 'Bottom Right' }
       ],
       fonts: [
-        'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New',
-        'Verdana', 'Impact', 'Comic Sans MS', 'Trebuchet MS', 'Lucida Console'
+        'Amiri',
+        'Arial',
+        'Bruno Ace',
+        'Comic Sans MS',
+        'Courier',
+        'Courier New',
+        'Georgia',
+        'Helvetica',
+        'Impact',
+        'Lucida Console',
+        'Modesto Condensed',
+        'Signika',
+        'Times',
+        'Times New Roman',
+        'Trebuchet MS',
+        'Verdana'
       ],
       dismissalModes: [
         { value: null, label: 'Use Module Setting' },
@@ -194,7 +208,8 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
       hasBackground: true,
       backgroundColor: '#000000',
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      lineHeight: 1.0
     });
     // Collapse all existing layers and expand only the new one
     this.expandedLayers.clear();
@@ -227,6 +242,43 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
   }
 
   static _onPreview(event, target) {
+    // Update config from form before preview
+    const formData = new FormDataExtended(target.form).object;
+
+    // Update all config values from form
+    this.config.backdropStyle = formData.backdropStyle;
+    this.config.backdropPrimaryColor = formData.backdropPrimaryColor || null;
+    this.config.backdropSecondaryColor = formData.backdropSecondaryColor || null;
+    this.config.imageHorizontalAlign = formData.imageHorizontalAlign || 'right';
+    this.config.animationStyle = formData.animationStyle;
+    this.config.duration = parseInt(formData.duration);
+    this.config.exitDuration = parseInt(formData.exitDuration);
+    this.config.dismissalMode = (formData.dismissalMode === 'null' || formData.dismissalMode === '') ? null : formData.dismissalMode;
+    this.config.autoDismissDelay = parseInt(formData.autoDismissDelay);
+
+    // Update text layers from form
+    const textLayerIndices = Object.keys(formData).filter(k => k.startsWith('textLayer.')).map(k => {
+      const match = k.match(/textLayer\.(\d+)\./);
+      return match ? parseInt(match[1]) : null;
+    }).filter((v, i, a) => v !== null && a.indexOf(v) === i);
+
+    textLayerIndices.forEach(index => {
+      if (this.config.textLayers[index]) {
+        this.config.textLayers[index].text = formData[`textLayer.${index}.text`] || '';
+        this.config.textLayers[index].font = formData[`textLayer.${index}.font`] || 'Impact';
+        this.config.textLayers[index].size = parseInt(formData[`textLayer.${index}.size`]) || 48;
+        this.config.textLayers[index].color = formData[`textLayer.${index}.color`] || '#ffffff';
+        this.config.textLayers[index].position = formData[`textLayer.${index}.position`] || 'top-left';
+        this.config.textLayers[index].hasBackground = formData[`textLayer.${index}.hasBackground`] || false;
+        this.config.textLayers[index].backgroundColor = formData[`textLayer.${index}.backgroundColor`] || '#000000';
+        this.config.textLayers[index].offsetX = parseInt(formData[`textLayer.${index}.offsetX`]) || 0;
+        this.config.textLayers[index].offsetY = parseInt(formData[`textLayer.${index}.offsetY`]) || 0;
+        // Clamp line height between 0.5 and 5.0
+        const lineHeight = parseFloat(formData[`textLayer.${index}.lineHeight`]) || 1.0;
+        this.config.textLayers[index].lineHeight = Math.max(0.5, Math.min(5.0, lineHeight));
+      }
+    });
+
     const overlay = new GMDeckCutinOverlay(this.config);
     overlay.render({ force: true });
   }
@@ -279,6 +331,9 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
         this.config.textLayers[index].backgroundColor = formData[`textLayer.${index}.backgroundColor`] || '#000000';
         this.config.textLayers[index].offsetX = parseInt(formData[`textLayer.${index}.offsetX`]) || 0;
         this.config.textLayers[index].offsetY = parseInt(formData[`textLayer.${index}.offsetY`]) || 0;
+        // Clamp line height between 0.5 and 5.0
+        const lineHeight = parseFloat(formData[`textLayer.${index}.lineHeight`]) || 1.0;
+        this.config.textLayers[index].lineHeight = Math.max(0.5, Math.min(5.0, lineHeight));
       }
     });
 
