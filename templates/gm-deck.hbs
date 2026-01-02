@@ -24,12 +24,21 @@
       </div>
       <div class="gm-deck-items">
         {{#each tileItems}}
-        <div class="gm-deck-item {{statusClass}}"
+        <div class="gm-deck-item {{statusClass}} {{#if isGlobal}}global-item{{/if}}"
              data-item-id="{{id}}"
              data-item-name="{{name}}"
-             title="{{name}} ({{#if isVisible}}Visible{{else}}Hidden{{/if}}) - Click to toggle, Right-click to remove"
+             data-is-global="{{isGlobal}}"
+             title="{{name}}{{#if isGlobal}} (Global){{/if}} ({{#if isVisible}}Visible{{else}}Hidden{{/if}}) - Click to toggle, Right-click for options"
              style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
           <img src="{{icon}}" alt="{{name}}" draggable="false"/>
+
+          {{!-- Global badge --}}
+          {{#if isGlobal}}
+          <div class="gm-deck-item-global-badge" title="This item appears on all scenes">
+            <i class="fas fa-globe"></i>
+          </div>
+          {{/if}}
+
           <div class="gm-deck-item-status">
             <i class="fas {{statusIcon}}"></i>
           </div>
@@ -47,12 +56,21 @@
       </div>
       <div class="gm-deck-items">
         {{#each macroItems}}
-        <div class="gm-deck-item {{statusClass}}"
+        <div class="gm-deck-item {{statusClass}} {{#if isGlobal}}global-item{{/if}}"
              data-item-id="{{id}}"
              data-item-name="{{name}}"
-             title="{{name}} - Click to execute, Right-click to remove"
+             data-is-global="{{isGlobal}}"
+             title="{{name}}{{#if isGlobal}} (Global){{/if}} - Click to execute, Right-click for options"
              style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
           <img src="{{icon}}" alt="{{name}}" draggable="false"/>
+
+          {{!-- Global badge --}}
+          {{#if isGlobal}}
+          <div class="gm-deck-item-global-badge" title="This item appears on all scenes">
+            <i class="fas fa-globe"></i>
+          </div>
+          {{/if}}
+
           <div class="gm-deck-item-status">
             <i class="fas {{statusIcon}}"></i>
           </div>
@@ -70,12 +88,21 @@
       </div>
       <div class="gm-deck-items">
         {{#each cutinItems}}
-        <div class="gm-deck-item {{statusClass}}"
+        <div class="gm-deck-item {{statusClass}} {{#if isGlobal}}global-item{{/if}}"
              data-item-id="{{id}}"
              data-item-name="{{name}}"
-             title="{{name}} - Click to play, Right-click for options"
+             data-is-global="{{isGlobal}}"
+             title="{{name}}{{#if isGlobal}} (Global){{/if}} - Click to play, Right-click for options"
              style="width: {{../buttonSize}}px; height: {{../buttonSize}}px;">
           <img src="{{icon}}" alt="{{name}}" draggable="false"/>
+
+          {{!-- Global badge --}}
+          {{#if isGlobal}}
+          <div class="gm-deck-item-global-badge" title="This item appears on all scenes">
+            <i class="fas fa-globe"></i>
+          </div>
+          {{/if}}
+
           <div class="gm-deck-item-status">
             <i class="fas {{statusIcon}}"></i>
           </div>

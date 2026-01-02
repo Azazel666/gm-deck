@@ -22,6 +22,77 @@ export class GMDeckData {
   }
 
   /**
+   * Get all global deck items (available on all scenes)
+   * @returns {Array} Array of global deck items
+   */
+  static getGlobalItems() {
+    return game.settings.get(MODULE_ID, 'globalItems') ?? [];
+  }
+
+  /**
+   * Set all global deck items
+   * @param {Array} items - Array of global deck items
+   */
+  static async setGlobalItems(items) {
+    await game.settings.set(MODULE_ID, 'globalItems', items);
+  }
+
+  /**
+   * Get combined items for current scene (global + scene-specific)
+   * @returns {Array} Merged array with global items first, each marked with isGlobal flag
+   */
+  static getCombinedItems() {
+    const globalItems = this.getGlobalItems();
+    const sceneItems = this.getItems();
+
+    // Add isGlobal flag for rendering
+    const markedGlobal = globalItems.map(item => ({ ...item, isGlobal: true }));
+    const markedScene = sceneItems.map(item => ({ ...item, isGlobal: false }));
+
+    return [...markedGlobal, ...markedScene];
+  }
+
+  /**
+   * Toggle item between global and scene-specific
+   * @param {string} itemId - Item ID to toggle
+   */
+  static async toggleItemGlobalStatus(itemId) {
+    const globalItems = this.getGlobalItems();
+    const sceneItems = this.getItems();
+
+    // Check if item is currently global
+    const globalIndex = globalItems.findIndex(i => i.id === itemId);
+
+    if (globalIndex !== -1) {
+      // Move from global to current scene
+      const [item] = globalItems.splice(globalIndex, 1);
+      delete item.isGlobal;
+      sceneItems.push(item);
+
+      await this.setGlobalItems(globalItems);
+      await this.setItems(sceneItems);
+
+      ui.notifications.info(`"${item.name}" is now scene-specific.`);
+    } else {
+      // Move from scene to global
+      const sceneIndex = sceneItems.findIndex(i => i.id === itemId);
+      if (sceneIndex === -1) {
+        ui.notifications.error('Item not found.');
+        return;
+      }
+
+      const [item] = sceneItems.splice(sceneIndex, 1);
+      item.isGlobal = true;
+      globalItems.push(item);
+
+      await this.setGlobalItems(globalItems);
+      await this.setItems(sceneItems);
+
+      ui.notifications.info(`"${item.name}" is now global (appears on all scenes).`);
+    }
+  }
+
+  /**
    * Add a new item to the deck
    * @param {string} type - 'tile-toggle' or 'macro'
    * @param {string} targetId - Tile ID or Macro UUID
@@ -29,13 +100,21 @@ export class GMDeckData {
    * @returns {object|null} The created item or null if failed
    */
   static async addItem(type, targetId, options = {}) {
-    const items = this.getItems();
-    
-    // Check for duplicates
-    if (items.some(i => i.type === type && i.targetId === targetId)) {
-      ui.notifications.warn('This item is already in the GM Deck.');
+    const globalItems = this.getGlobalItems();
+    const sceneItems = this.getItems();
+
+    // Check for duplicates in BOTH storages
+    const existsInGlobal = globalItems.some(i => i.type === type && i.targetId === targetId);
+    const existsInScene = sceneItems.some(i => i.type === type && i.targetId === targetId);
+
+    if (existsInGlobal || existsInScene) {
+      const location = existsInGlobal ? 'global deck' : 'this scene\'s deck';
+      ui.notifications.warn(`This item is already in the ${location}.`);
       return null;
     }
+
+    // Use scene items for adding new items (always add to scene by default)
+    const items = sceneItems;
 
     // Get default name and icon based on type
     let name, icon;
@@ -103,19 +182,29 @@ export class GMDeckData {
    * @param {string} itemId - The deck item ID to remove
    */
   static async removeItem(itemId) {
-    const items = this.getItems();
-    const index = items.findIndex(i => i.id === itemId);
-    
-    if (index === -1) {
-      ui.notifications.warn('Item not found in GM Deck.');
-      return false;
+    const globalItems = this.getGlobalItems();
+    const sceneItems = this.getItems();
+
+    // Try global first
+    let index = globalItems.findIndex(i => i.id === itemId);
+    if (index !== -1) {
+      const removed = globalItems.splice(index, 1)[0];
+      await this.setGlobalItems(globalItems);
+      ui.notifications.info(`Removed "${removed.name}" from GM Deck.`);
+      return true;
     }
 
-    const removed = items.splice(index, 1)[0];
-    await this.setItems(items);
-    
-    ui.notifications.info(`Removed "${removed.name}" from GM Deck.`);
-    return true;
+    // Try scene-specific
+    index = sceneItems.findIndex(i => i.id === itemId);
+    if (index !== -1) {
+      const removed = sceneItems.splice(index, 1)[0];
+      await this.setItems(sceneItems);
+      ui.notifications.info(`Removed "${removed.name}" from GM Deck.`);
+      return true;
+    }
+
+    ui.notifications.warn('Item not found in GM Deck.');
+    return false;
   }
 
   /**
@@ -124,17 +213,27 @@ export class GMDeckData {
    * @param {object} updates - Properties to update
    */
   static async updateItem(itemId, updates) {
-    const items = this.getItems();
-    const item = items.find(i => i.id === itemId);
-    
-    if (!item) {
-      ui.notifications.warn('Item not found in GM Deck.');
-      return false;
+    const globalItems = this.getGlobalItems();
+    const sceneItems = this.getItems();
+
+    // Try global first
+    let item = globalItems.find(i => i.id === itemId);
+    if (item) {
+      Object.assign(item, updates);
+      await this.setGlobalItems(globalItems);
+      return true;
     }
 
-    Object.assign(item, updates);
-    await this.setItems(items);
-    return true;
+    // Try scene-specific
+    item = sceneItems.find(i => i.id === itemId);
+    if (item) {
+      Object.assign(item, updates);
+      await this.setItems(sceneItems);
+      return true;
+    }
+
+    ui.notifications.warn('Item not found in GM Deck.');
+    return false;
   }
 
   /**
@@ -160,7 +259,7 @@ export class GMDeckData {
    * @param {string|Array} audienceOverride - Optional audience override ('all' or array of user IDs)
    */
   static async executeItem(itemId, audienceOverride = null) {
-    const items = this.getItems();
+    const items = this.getCombinedItems();
     const item = items.find(i => i.id === itemId);
 
     if (!item) {
@@ -231,7 +330,7 @@ export class GMDeckData {
    * @param {string|Array} audienceOverride - Optional audience override ('all' or array of user IDs)
    */
   static async executeCutin(itemId, audienceOverride = null) {
-    const items = this.getItems();
+    const items = this.getCombinedItems();
     const item = items.find(i => i.id === itemId);
 
     if (!item || item.type !== 'cinematic-cutin') {

@@ -18,7 +18,7 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
 
     // Load existing item if editing
     if (itemId) {
-      const items = GMDeckData.getItems();
+      const items = GMDeckData.getCombinedItems();
       const item = items.find(i => i.id === itemId);
       if (item) {
         this.config = foundry.utils.deepClone(item.config);

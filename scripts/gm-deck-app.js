@@ -16,6 +16,9 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 
     super(options);
+
+    // Flag to prevent saving state during initialization
+    this._isInitializing = true;
   }
 
   /* -------------------------------------------- */
@@ -55,7 +58,7 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /* -------------------------------------------- */
 
   async _prepareContext(options) {
-    const items = GMDeckData.getItems();
+    const items = GMDeckData.getCombinedItems();
     const buttonSize = game.settings.get(MODULE_ID, 'buttonSize');
     const buttonsPerRow = game.settings.get(MODULE_ID, 'buttonsPerRow');
 
@@ -124,11 +127,33 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
     el.style.setProperty('--panel-width', `${context.panelWidth}px`);
 
     // Set initial collapsed state on first render
-    if (!this._hasSetInitialMinimized && game.settings.get(MODULE_ID, 'collapsedByDefault')) {
+    if (!this._hasSetInitialMinimized) {
       this._hasSetInitialMinimized = true;
+
+      const behavior = game.settings.get(MODULE_ID, 'panelStartBehavior');
+      console.log(`${MODULE_ID} | Setting initial state. Behavior: ${behavior}`);
+
       // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
-        this.minimize();
+        if (behavior === 'always-collapsed') {
+          console.log(`${MODULE_ID} | Applying always-collapsed behavior`);
+          this.minimize();
+        } else if (behavior === 'remember-state') {
+          const wasMinimized = game.settings.get(MODULE_ID, 'rememberedMinimizedState');
+          console.log(`${MODULE_ID} | Remember-state mode. Was minimized: ${wasMinimized}`);
+          if (wasMinimized) {
+            this.minimize();
+          }
+        } else {
+          console.log(`${MODULE_ID} | Always-open behavior (or default)`);
+        }
+        // 'always-open' or default: do nothing, stays open
+
+        // Mark initialization as complete
+        setTimeout(() => {
+          this._isInitializing = false;
+          console.log(`${MODULE_ID} | Initialization complete, state saving enabled`);
+        }, 100);
       });
     }
 
@@ -147,6 +172,52 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
         top: this.position.top,
         left: this.position.left
       });
+    }
+
+    return result;
+  }
+
+  /**
+   * Override minimize to save state
+   */
+  async minimize() {
+    const result = await super.minimize();
+
+    // Don't save state during initialization
+    if (this._isInitializing) {
+      console.log(`${MODULE_ID} | Panel minimized during initialization, not saving state`);
+      return result;
+    }
+
+    // Save minimized state if using remember-state behavior
+    const behavior = game.settings.get(MODULE_ID, 'panelStartBehavior');
+    console.log(`${MODULE_ID} | Panel minimized. Behavior: ${behavior}`);
+    if (behavior === 'remember-state') {
+      await game.settings.set(MODULE_ID, 'rememberedMinimizedState', true);
+      console.log(`${MODULE_ID} | Saved minimized state: true`);
+    }
+
+    return result;
+  }
+
+  /**
+   * Override maximize to save state
+   */
+  async maximize() {
+    const result = await super.maximize();
+
+    // Don't save state during initialization
+    if (this._isInitializing) {
+      console.log(`${MODULE_ID} | Panel maximized during initialization, not saving state`);
+      return result;
+    }
+
+    // Save maximized state if using remember-state behavior
+    const behavior = game.settings.get(MODULE_ID, 'panelStartBehavior');
+    console.log(`${MODULE_ID} | Panel maximized. Behavior: ${behavior}`);
+    if (behavior === 'remember-state') {
+      await game.settings.set(MODULE_ID, 'rememberedMinimizedState', false);
+      console.log(`${MODULE_ID} | Saved minimized state: false`);
     }
 
     return result;
@@ -186,6 +257,44 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
       windowHeader.addEventListener('dragover', this.#onDragOver.bind(this));
       windowHeader.addEventListener('dragleave', this.#onDragLeave.bind(this));
       windowHeader.addEventListener('drop', this.#onDrop.bind(this));
+    }
+
+    // Listen to minimize/maximize controls to save state
+    const minimizeBtn = el.querySelector('.window-control[data-action="minimize"]');
+    const maximizeBtn = el.querySelector('.window-control[data-action="maximize"]');
+
+    if (minimizeBtn) {
+      minimizeBtn.addEventListener('click', async () => {
+        // Don't save during initialization
+        if (this._isInitializing) {
+          console.log(`${MODULE_ID} | Minimize button clicked during init, not saving`);
+          return;
+        }
+
+        const behavior = game.settings.get(MODULE_ID, 'panelStartBehavior');
+        console.log(`${MODULE_ID} | Minimize button clicked. Behavior: ${behavior}`);
+        if (behavior === 'remember-state') {
+          await game.settings.set(MODULE_ID, 'rememberedMinimizedState', true);
+          console.log(`${MODULE_ID} | Saved minimized state: true`);
+        }
+      });
+    }
+
+    if (maximizeBtn) {
+      maximizeBtn.addEventListener('click', async () => {
+        // Don't save during initialization
+        if (this._isInitializing) {
+          console.log(`${MODULE_ID} | Maximize button clicked during init, not saving`);
+          return;
+        }
+
+        const behavior = game.settings.get(MODULE_ID, 'panelStartBehavior');
+        console.log(`${MODULE_ID} | Maximize button clicked. Behavior: ${behavior}`);
+        if (behavior === 'remember-state') {
+          await game.settings.set(MODULE_ID, 'rememberedMinimizedState', false);
+          console.log(`${MODULE_ID} | Saved minimized state: false`);
+        }
+      });
     }
   }
 
@@ -230,38 +339,62 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const itemId = event.currentTarget.dataset.itemId;
     const itemName = event.currentTarget.dataset.itemName;
+    const isGlobal = event.currentTarget.dataset.isGlobal === 'true';
 
     // Get the item to check its type
-    const items = GMDeckData.getItems();
+    const items = GMDeckData.getCombinedItems();
     const item = items.find(i => i.id === itemId);
 
     if (!item) return;
 
+    // Build button array based on item type
+    const buttons = [];
+
+    // Global/Scene-specific toggle for macros and cut-ins only (NOT tiles)
+    if (item.type === 'macro' || item.type === 'cinematic-cutin') {
+      buttons.push({
+        action: 'toggle-global',
+        label: isGlobal ? 'Make Scene-Specific' : 'Make Global',
+        icon: isGlobal ? 'fas fa-map' : 'fas fa-globe'
+      });
+    }
+
     // For cinematic cut-ins, show edit, target audience, and delete options
     if (item.type === 'cinematic-cutin') {
-      const action = await foundry.applications.api.DialogV2.wait({
-        window: { title: itemName },
-        content: `<p style="margin-bottom: 1em;">What would you like to do with <strong>${itemName}</strong>?</p>`,
-        buttons: [
-          {
-            action: 'edit',
-            label: 'Edit Configuration',
-            icon: 'fas fa-edit',
-            default: true
-          },
-          {
-            action: 'target',
-            label: 'Targeted Audience',
-            icon: 'fas fa-users'
-          },
-          {
-            action: 'delete',
-            label: 'Remove from Deck',
-            icon: 'fas fa-trash'
-          }
-        ],
-        rejectClose: false
-      });
+      buttons.push(
+        {
+          action: 'edit',
+          label: 'Edit Configuration',
+          icon: 'fas fa-edit',
+          default: true
+        },
+        {
+          action: 'target',
+          label: 'Targeted Audience',
+          icon: 'fas fa-users'
+        }
+      );
+    }
+
+    // Remove option for all types
+    buttons.push({
+      action: 'delete',
+      label: 'Remove from Deck',
+      icon: 'fas fa-trash'
+    });
+
+    const action = await foundry.applications.api.DialogV2.wait({
+      window: { title: itemName },
+      content: `<p style="margin-bottom: 1em;">What would you like to do with <strong>${itemName}</strong>?</p>`,
+      buttons: buttons,
+      rejectClose: false
+    });
+
+    // Handle actions
+    if (action === 'toggle-global') {
+      await GMDeckData.toggleItemGlobalStatus(itemId);
+      this.render();
+    } else if (item.type === 'cinematic-cutin') {
 
       if (action === 'edit') {
         // Open edit dialog
@@ -271,20 +404,11 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
       } else if (action === 'target') {
         // Show targeted audience dialog
         await this.#showTargetedAudienceDialog(itemId, itemName);
-      } else if (action === 'delete') {
-        // Show delete confirmation
-        const confirmed = await foundry.applications.api.DialogV2.confirm({
-          window: { title: 'Remove from GM Deck' },
-          content: `<p>Remove <strong>${itemName}</strong> from the deck?</p>`,
-          rejectClose: false
-        });
-        if (confirmed) {
-          await GMDeckData.removeItem(itemId);
-          this.render();
-        }
       }
-    } else {
-      // For tiles and macros, show simple delete confirmation
+    }
+
+    // Handle delete action (common for all types)
+    if (action === 'delete') {
       const confirmed = await foundry.applications.api.DialogV2.confirm({
         window: { title: 'Remove from GM Deck' },
         content: `<p>Remove <strong>${itemName}</strong> from the deck?</p>`,

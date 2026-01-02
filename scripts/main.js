@@ -21,11 +21,30 @@ function registerSettings() {
     default: { top: 100, left: 100 }
   });
 
-  game.settings.register(MODULE_ID, 'collapsedByDefault', {
-    name: 'Start Collapsed',
-    hint: 'Whether the panel starts collapsed when opening a scene.',
+  game.settings.register(MODULE_ID, 'panelStartBehavior', {
+    name: 'Panel Start Behavior',
+    hint: 'How the GM Deck panel should behave when switching scenes.',
     scope: 'client',
     config: true,
+    type: String,
+    choices: {
+      'always-open': 'Always Start Open',
+      'always-collapsed': 'Always Start Collapsed',
+      'remember-state': 'Remember Last State'
+    },
+    default: 'always-open',
+    onChange: () => {
+      if (gmDeckApp?.rendered) {
+        gmDeckApp.render();
+      }
+    }
+  });
+
+  game.settings.register(MODULE_ID, 'rememberedMinimizedState', {
+    name: 'Remembered Minimized State',
+    hint: 'Stores whether the panel was minimized (used when Panel Start Behavior is set to Remember Last State).',
+    scope: 'client',
+    config: false,
     type: Boolean,
     default: false
   });
@@ -90,6 +109,15 @@ function registerSettings() {
     type: Array,
     default: []
   });
+
+  game.settings.register(MODULE_ID, 'globalItems', {
+    name: 'Global GM Deck Items',
+    hint: 'Items that appear on all scenes.',
+    scope: 'world',
+    config: false,
+    type: Array,
+    default: []
+  });
 }
 
 /* -------------------------------------------- */
@@ -116,6 +144,7 @@ Hooks.once('init', () => {
     addTile: (tileId) => GMDeckData.addItem('tile-toggle', tileId),
     addMacro: (macroUuid) => GMDeckData.addItem('macro', macroUuid),
     removeItem: (itemId) => GMDeckData.removeItem(itemId),
+    toggleItemGlobalStatus: (itemId) => GMDeckData.toggleItemGlobalStatus(itemId),
 
     // Cutin API
     addCutin: (config, name, icon) => GMDeckData.addItem('cinematic-cutin', null, { config, name, icon }),
@@ -292,10 +321,15 @@ Hooks.on('updateTile', (tile, changes) => {
 Hooks.on('deleteTile', (tile) => {
   // Remove tile from deck if it was deleted from scene
   if (gmDeckApp?.rendered) {
-    const items = GMDeckData.getItems();
-    const item = items.find(i => i.type === 'tile-toggle' && i.targetId === tile.id);
-    if (item) {
-      GMDeckData.removeItem(item.id);
+    const sceneItems = GMDeckData.getItems();
+    const globalItems = GMDeckData.getGlobalItems();
+
+    const sceneItem = sceneItems.find(i => i.type === 'tile-toggle' && i.targetId === tile.id);
+    const globalItem = globalItems.find(i => i.type === 'tile-toggle' && i.targetId === tile.id);
+
+    if (sceneItem || globalItem) {
+      const itemToRemove = sceneItem || globalItem;
+      GMDeckData.removeItem(itemToRemove.id);
       gmDeckApp.render();
     }
   }

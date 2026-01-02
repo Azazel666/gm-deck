@@ -6,17 +6,24 @@ A scene-specific control panel for Foundry VTT Game Masters to quickly toggle ti
 
 ### GM Deck Panel
 
-- **Scene-Specific Decks**: Each scene maintains its own independent deck configuration
+- **Scene-Specific & Global Items**: Each scene maintains its own deck, plus share macros and cut-ins across all scenes with global items
+- **Global Items Support**: Mark macros and cut-ins as "global" to make them available on all scenes
+  - Distinguished by gold globe badge overlay
+  - Easy toggle via right-click context menu
+  - Tiles remain scene-specific (as they're tied to specific scenes)
 - **Quick Tile Visibility Toggle**: Add tiles to your deck and toggle their visibility with a single click
 - **Visual Status Indicators**: Color-coded borders and icons show tile visibility at a glance
   - Green border: Tile is visible
   - Red border: Tile is hidden
   - Yellow border: Tile no longer exists in the scene
 - **Draggable Panel**: Position the deck anywhere on your screen - your preference is saved across sessions
-- **Minimize Support**: Double-click the title bar to minimize/maximize the panel
-- **Easy Tile Management**:
+- **Smart Panel Behavior**: Choose how the panel behaves when switching scenes:
+  - Always start open or collapsed
+  - Remember your last state (minimized/expanded)
+- **Easy Item Management**:
   - Add tiles by right-clicking them on the canvas
-  - Remove tiles by right-clicking buttons in the deck
+  - Add macros by dragging them onto the panel
+  - Remove items by right-clicking buttons in the deck
 - **Auto-Cleanup**: Deleted tiles are automatically removed from the deck
 - **Macro Support**: Add and execute macros directly from the deck
 
@@ -72,10 +79,20 @@ https://github.com/Azazel666/gm-deck/releases/latest/download/module.json
    - **Green**: Tile is visible to players
    - **Red**: Tile is hidden from players
 
-### Removing Tiles from the Deck
+### Removing Items from the Deck
 
-1. **Right-click** a tile button in the deck
-2. Confirm removal in the dialog
+1. **Right-click** any item button in the deck
+2. Select **"Remove from Deck"**
+3. Confirm removal in the dialog
+
+### Making Items Global (Macros & Cut-ins Only)
+
+1. **Right-click** a macro or cut-in button in the deck
+2. Select **"Make Global"**
+3. The item now shows a gold globe badge and appears on all scenes
+4. To make it scene-specific again, right-click and select **"Make Scene-Specific"**
+
+**Note**: Tiles cannot be made global as they are physically placed in specific scenes.
 
 ### Managing the Panel
 
@@ -192,8 +209,12 @@ Access module settings via Configure Settings → Module Settings:
 
 ### GM Deck Panel Settings
 
-- **Start Collapsed**: Whether the panel starts minimized when opening a scene (default: false)
+- **Panel Start Behavior**: How the panel behaves when switching scenes
+  - **Always Start Open** (default): Panel always opens expanded
+  - **Always Start Collapsed**: Panel always opens minimized
+  - **Remember Last State**: Panel remembers whether you minimized or expanded it
 - **Button Size**: Size of the deck buttons in pixels (default: 40px, range: 32-64px)
+- **Buttons Per Row**: Number of buttons to display per row (default: 5, range: 4-8)
 
 ### Cinematic Cut-in Settings
 
@@ -226,8 +247,22 @@ api.addMacro(macroUuid);
 // Remove an item from the deck
 api.removeItem(itemId);
 
+// Toggle an item between global and scene-specific
+api.toggleItemGlobalStatus(itemId);
+
 // Get the deck application instance
 const app = api.getApp();
+
+// Cinematic Cut-in API
+api.addCutin(config, name, icon);          // Add a cut-in to the deck
+api.showCutin(config, targetUsers);        // Show a cut-in directly
+api.dismissCutin(cutinId);                 // Dismiss a specific cut-in
+api.createCutinDialog();                   // Open the cut-in configuration dialog
+
+// Preset API
+await api.presets.get();                   // Get all saved presets
+await api.presets.save(name, config);      // Save a new preset
+await api.presets.delete(presetId);        // Delete a preset
 ```
 
 ## Roadmap

@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-01-02
+
+### Added
+
+- **Global Items Feature**: Macros and cinematic cut-ins can now be marked as "global" to appear on all scenes
+  - Right-click any macro or cut-in in the deck and select "Make Global" to make it available across all scenes
+  - Global items display a distinctive gold globe badge in the top-left corner
+  - Subtle gold border enhancement on global items for better visual distinction
+  - Right-click context menu dynamically shows "Make Global" or "Make Scene-Specific" based on current state
+  - Tiles remain scene-specific only (cannot be made global, as they are physically placed in scenes)
+  - Global items stored in world settings, separate from scene-specific items in scene flags
+  - Duplicate prevention: cannot add the same item to both global and scene-specific decks
+  - Tooltip shows "(Global)" indicator for global items
+  - API method: `game.modules.get('gm-deck').api.toggleItemGlobalStatus(itemId)`
+
+- **Enhanced Panel Start Behavior Setting**: Improved control over panel state when switching scenes
+  - New "Panel Start Behavior" setting with three options:
+    - **Always Start Open** (default): Panel always opens expanded when switching scenes
+    - **Always Start Collapsed**: Panel always opens minimized when switching scenes
+    - **Remember Last State**: Panel remembers whether it was minimized or expanded and maintains that state across scene changes
+  - Replaces the old "Start Collapsed" boolean setting with more flexible choice-based setting
+  - Panel state is saved automatically when you manually minimize or maximize the panel
+  - Initialization flag prevents automatic state overwrites during scene loading
+  - Client-scoped setting (each user can have their own preference)
+
+### Changed
+
+- Context menu for tiles now shows only "Remove from Deck" (no global toggle, since tiles are scene-specific)
+- Context menu for macros and cut-ins now includes global toggle option before other options
+- Panel initialization improved to prevent unwanted state changes during scene transitions
+
+### Technical
+
+- Added `globalItems` world setting to store cross-scene items
+- Added `rememberedMinimizedState` client setting to track panel state
+- Updated `GMDeckData` class with new methods: `getGlobalItems()`, `setGlobalItems()`, `getCombinedItems()`, `toggleItemGlobalStatus()`
+- All item retrieval methods now check both global and scene-specific storage
+- Enhanced `GMDeckApp` with initialization flag to prevent state saving during panel creation
+- Event listeners added to minimize/maximize window controls for state tracking
+- Template updates to display global badge overlay conditionally
+- CSS additions for global item badge styling and hover effects
+
 ## [1.1.0] - 2024-12-21
 
 ### Added
@@ -139,4 +181,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No sound effect integration for cut-ins yet
 - Cut-ins cannot be triggered programmatically via API (must be clicked from deck)
 
+[1.2.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.2.0
+[1.1.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.0.0

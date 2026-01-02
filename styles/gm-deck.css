@@ -307,3 +307,41 @@
 .gm-deck-header.drag-over {
   background: linear-gradient(135deg, #5a4a8a 0%, #3a2a5a 100%);
 }
+
+/* -------------------------------------------- */
+/*  Global Item Badge                           */
+/* -------------------------------------------- */
+
+.gm-deck-item-global-badge {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 8px;
+  background: rgba(251, 191, 36, 0.9); /* Gold */
+  color: #1a1a1a;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.gm-deck-item-global-badge i {
+  font-size: 8px;
+}
+
+/* Subtle border enhancement for global items */
+.gm-deck-item.global-item {
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.3),
+              0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.gm-deck-item.global-item:hover {
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.5),
+              0 4px 12px rgba(0, 0, 0, 0.5);
+}
