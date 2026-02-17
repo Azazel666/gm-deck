@@ -43,6 +43,10 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
         dismissalMode: null,
         autoDismissDelay: 3000,
         audience: 'all',
+        soundUuid: null,
+        soundName: null,
+        soundVolume: 0.8,
+        soundLoop: true,
         ...initialData.config
       };
       this.cutinName = initialData.name || 'New Cut-in';
@@ -126,6 +130,13 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
     const currentBackdrop = backdropStyles.find(b => b.value === this.config.backdropStyle);
     const backdropColors = currentBackdrop?.colors || 'none';
 
+    // Resolve effective dismissal mode for sound section visibility
+    const configMode = (this.config.dismissalMode === '' || this.config.dismissalMode === null || this.config.dismissalMode === undefined)
+      ? null
+      : this.config.dismissalMode;
+    const effectiveDismissalMode = configMode ?? game.settings.get(MODULE_ID, 'cutinDismissalMode');
+    const showSoundSection = effectiveDismissalMode === 'gm-dismiss' || effectiveDismissalMode === 'auto-dismiss';
+
     return {
       cutinName: this.cutinName,
       config: {
@@ -137,6 +148,8 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
       players,
       backdropStyles,
       backdropColors,
+      showSoundSection,
+      soundVolumePercent: Math.round((this.config.soundVolume ?? 0.8) * 100),
       animationStyles: [
         { value: 'slide-right', label: 'Slide from Right' },
         { value: 'slide-left', label: 'Slide from Left' },
@@ -209,7 +222,8 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
       backgroundColor: '#000000',
       offsetX: 0,
       offsetY: 0,
-      lineHeight: 1.0
+      lineHeight: 1.0,
+      maxWidth: 80
     });
     // Collapse all existing layers and expand only the new one
     this.expandedLayers.clear();
@@ -255,6 +269,8 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
     this.config.exitDuration = parseInt(formData.exitDuration);
     this.config.dismissalMode = (formData.dismissalMode === 'null' || formData.dismissalMode === '') ? null : formData.dismissalMode;
     this.config.autoDismissDelay = parseInt(formData.autoDismissDelay);
+    this.config.soundVolume = parseFloat(formData.soundVolume) || 0.8;
+    this.config.soundLoop = formData.soundLoop || false;
 
     // Update text layers from form
     const textLayerIndices = Object.keys(formData).filter(k => k.startsWith('textLayer.')).map(k => {
@@ -276,6 +292,9 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
         // Clamp line height between 0.5 and 5.0
         const lineHeight = parseFloat(formData[`textLayer.${index}.lineHeight`]) || 1.0;
         this.config.textLayers[index].lineHeight = Math.max(0.5, Math.min(5.0, lineHeight));
+        // Clamp max width between 10 and 100
+        const maxWidth = parseInt(formData[`textLayer.${index}.maxWidth`]) || 80;
+        this.config.textLayers[index].maxWidth = Math.max(10, Math.min(100, maxWidth));
       }
     });
 
@@ -298,6 +317,8 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
     this.config.exitDuration = parseInt(formData.exitDuration);
     this.config.dismissalMode = (formData.dismissalMode === 'null' || formData.dismissalMode === '') ? null : formData.dismissalMode;
     this.config.autoDismissDelay = parseInt(formData.autoDismissDelay);
+    this.config.soundVolume = parseFloat(formData.soundVolume) || 0.8;
+    this.config.soundLoop = formData.soundLoop || false;
 
     // Handle audience selection
     if (formData.audienceMode === 'all') {
@@ -334,6 +355,9 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
         // Clamp line height between 0.5 and 5.0
         const lineHeight = parseFloat(formData[`textLayer.${index}.lineHeight`]) || 1.0;
         this.config.textLayers[index].lineHeight = Math.max(0.5, Math.min(5.0, lineHeight));
+        // Clamp max width between 10 and 100
+        const maxWidth = parseInt(formData[`textLayer.${index}.maxWidth`]) || 80;
+        this.config.textLayers[index].maxWidth = Math.max(10, Math.min(100, maxWidth));
       }
     });
 
@@ -480,6 +504,8 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
     if (dismissalModeSelector) {
       dismissalModeSelector.addEventListener('change', (event) => {
         this.config.dismissalMode = (event.target.value === 'null' || event.target.value === '') ? null : event.target.value;
+        // Re-render to show/hide sound section based on effective dismissal mode
+        this.render();
       });
     }
 
@@ -487,6 +513,66 @@ export class GMDeckCutinConfig extends HandlebarsApplicationMixin(ApplicationV2)
     if (autoDismissInput) {
       autoDismissInput.addEventListener('change', (event) => {
         this.config.autoDismissDelay = parseInt(event.target.value);
+      });
+    }
+
+    // Setup sound drop zone
+    const soundDropZone = this.element.querySelector('.sound-drop-zone');
+    if (soundDropZone) {
+      soundDropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+        soundDropZone.classList.add('dragover');
+      });
+      soundDropZone.addEventListener('dragleave', () => {
+        soundDropZone.classList.remove('dragover');
+      });
+      soundDropZone.addEventListener('drop', async (event) => {
+        event.preventDefault();
+        soundDropZone.classList.remove('dragover');
+        try {
+          const data = JSON.parse(event.dataTransfer.getData('text/plain'));
+          if (data.type === 'PlaylistSound') {
+            const sound = await fromUuid(data.uuid);
+            if (sound) {
+              this.config.soundUuid = data.uuid;
+              this.config.soundName = sound.name;
+              this.render();
+            }
+          } else {
+            ui.notifications.warn('Please drag a sound from a Playlist.');
+          }
+        } catch (e) {
+          ui.notifications.warn('Invalid drop data. Drag a sound from a Playlist.');
+        }
+      });
+    }
+
+    // Setup sound clear button
+    const soundClearBtn = this.element.querySelector('.sound-clear-btn');
+    if (soundClearBtn) {
+      soundClearBtn.addEventListener('click', () => {
+        this.config.soundUuid = null;
+        this.config.soundName = null;
+        this.render();
+      });
+    }
+
+    // Setup sound volume slider
+    const soundVolumeInput = this.element.querySelector('input[name="soundVolume"]');
+    if (soundVolumeInput) {
+      const volumeDisplay = this.element.querySelector('.sound-volume-display');
+      soundVolumeInput.addEventListener('input', (event) => {
+        this.config.soundVolume = parseFloat(event.target.value);
+        if (volumeDisplay) volumeDisplay.textContent = `${Math.round(this.config.soundVolume * 100)}%`;
+      });
+    }
+
+    // Setup sound loop checkbox
+    const soundLoopInput = this.element.querySelector('input[name="soundLoop"]');
+    if (soundLoopInput) {
+      soundLoopInput.addEventListener('change', (event) => {
+        this.config.soundLoop = event.target.checked;
       });
     }
 

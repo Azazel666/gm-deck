@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-02-17
+
+### Added
+
+- **Sound Auto-Play for Cinematic Cut-ins**: Drag a sound from a Playlist into the cut-in config to have it play automatically when the cut-in is shown
+  - Drag-and-drop from Foundry's Playlist sidebar into the sound drop zone
+  - Volume slider (0–100%) for controlling sound playback level
+  - Loop toggle for repeating sounds (default on)
+  - All currently playing playlist sounds are paused when the cut-in plays and resume from where they left off when dismissed
+  - Sound is only available when dismissal mode is set to "GM Dismiss" or "Auto-Dismiss" (not player-dismiss, since players could dismiss mid-sound)
+  - Sound section dynamically shows/hides when changing dismissal mode
+  - Only the GM client controls playlist pause/resume to avoid conflicts across clients
+
+- **Text Layer Max Width Control**: Added a "Max Width (%)" setting to text layers
+  - Adjustable from 10% to 100% in 5% increments (default 80%)
+  - Controls how wide the text block can stretch across the screen
+  - Useful for constraining long text to a specific area or allowing it to fill the full width
+
+### Fixed
+
+- No sound effect integration for cut-ins (listed in 1.0.0 known limitations) is now resolved
+
 ## [1.2.0] - 2025-01-02
 
 ### Added
@@ -181,6 +203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No sound effect integration for cut-ins yet
 - Cut-ins cannot be triggered programmatically via API (must be clicked from deck)
 
+[1.3.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.3.0
 [1.2.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.2.0
 [1.1.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Azazel666/gm-deck/releases/tag/v1.0.0

@@ -127,6 +127,10 @@
               <label>Line Height</label>
               <input type="number" name="textLayer.{{index}}.lineHeight" value="{{#if lineHeight}}{{lineHeight}}{{else}}1.0{{/if}}" min="0.5" max="5.0" step="0.1" />
             </div>
+            <div class="text-layer-field">
+              <label>Max Width (%)</label>
+              <input type="number" name="textLayer.{{index}}.maxWidth" value="{{#if maxWidth}}{{maxWidth}}{{else}}80{{/if}}" min="10" max="100" step="5" />
+            </div>
           </div>
           <div class="text-layer-field">
             <label>Position</label>
@@ -203,6 +207,44 @@
     <input type="number" name="autoDismissDelay" value="{{config.autoDismissDelay}}" min="1000" max="10000" step="500" />
     <small>Used when dismissal mode is set to Auto-Dismiss</small>
   </div>
+
+  {{!-- Sound Section (only for gm-dismiss and auto-dismiss modes) --}}
+  {{#if showSoundSection}}
+  <div class="form-group">
+    <label>Sound</label>
+    <div class="sound-drop-zone">
+      {{#if config.soundName}}
+      <div class="sound-info">
+        <i class="fas fa-music"></i>
+        <span class="sound-name">{{config.soundName}}</span>
+        <button type="button" class="sound-clear-btn"><i class="fas fa-times"></i></button>
+      </div>
+      {{else}}
+      <div class="sound-placeholder">
+        <i class="fas fa-music"></i>
+        <span>Drag a sound from a Playlist</span>
+      </div>
+      {{/if}}
+      <input type="hidden" name="soundUuid" value="{{config.soundUuid}}" />
+    </div>
+    <div class="sound-controls">
+      <div class="sound-control">
+        <label>Volume</label>
+        <div class="sound-volume-row">
+          <input type="range" name="soundVolume" value="{{config.soundVolume}}" min="0" max="1" step="0.05" />
+          <span class="sound-volume-display">{{soundVolumePercent}}%</span>
+        </div>
+      </div>
+      <div class="sound-control">
+        <label class="checkbox-label">
+          <input type="checkbox" name="soundLoop" {{#if config.soundLoop}}checked{{/if}} />
+          Loop Sound
+        </label>
+      </div>
+    </div>
+    <small>Currently playing playlists will pause while the cut-in is active</small>
+  </div>
+  {{/if}}
 
   {{!-- Audience Selection --}}
   <div class="form-group">

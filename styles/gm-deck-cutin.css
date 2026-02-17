@@ -347,7 +347,7 @@
   text-shadow: 4px 4px 8px rgba(0,0,0,0.9);
   white-space: pre-line;
   display: inline-block;
-  max-width: 80%;
+  max-width: var(--max-width, 80%);
   vertical-align: top;
 }
 

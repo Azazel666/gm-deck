@@ -436,3 +436,103 @@
 .gm-deck-cutin-config .window-content::-webkit-scrollbar-thumb:hover {
   background: #666;
 }
+
+/* Sound Section */
+.gm-deck-cutin-config .sound-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: #1a1a1a;
+  border: 2px dashed #444;
+  border-radius: 6px;
+  min-height: 50px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.gm-deck-cutin-config .sound-drop-zone.dragover {
+  border-color: #7c5edc;
+  background: #2a2a4a;
+}
+
+.gm-deck-cutin-config .sound-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.gm-deck-cutin-config .sound-placeholder i {
+  font-size: 16px;
+}
+
+.gm-deck-cutin-config .sound-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.gm-deck-cutin-config .sound-info i {
+  color: #7c5edc;
+  font-size: 14px;
+}
+
+.gm-deck-cutin-config .sound-info .sound-name {
+  flex: 1;
+  color: #ddd;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gm-deck-cutin-config .sound-clear-btn {
+  background: none;
+  border: none;
+  color: #f87171;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  transition: color 0.2s ease;
+}
+
+.gm-deck-cutin-config .sound-clear-btn:hover {
+  color: #ff5555;
+}
+
+.gm-deck-cutin-config .sound-controls {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+
+.gm-deck-cutin-config .sound-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gm-deck-cutin-config .sound-control:first-child {
+  flex: 1;
+}
+
+.gm-deck-cutin-config .sound-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gm-deck-cutin-config .sound-volume-row input[type="range"] {
+  flex: 1;
+  accent-color: #7c5edc;
+}
+
+.gm-deck-cutin-config .sound-volume-display {
+  color: #aaa;
+  font-size: 12px;
+  min-width: 36px;
+  text-align: right;
+}

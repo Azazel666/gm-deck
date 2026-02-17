@@ -11,6 +11,7 @@ export class GMDeckCutinOverlay extends HandlebarsApplicationMixin(ApplicationV2
     this.config = config;
     this.cutinId = cutinId || `cutin-${foundry.utils.randomID()}`;
     this.isDismissed = false;
+    this.pausedSounds = [];
   }
 
   /* -------------------------------------------- */
@@ -131,6 +132,11 @@ export class GMDeckCutinOverlay extends HandlebarsApplicationMixin(ApplicationV2
       }
     }
 
+    // Start sound if configured and dismissal mode supports it
+    if (this.config.soundUuid && (dismissalMode === 'gm-dismiss' || dismissalMode === 'auto-dismiss')) {
+      this.#startSound();
+    }
+
     // Store reference in ui.windows for socket-based dismissal
     ui.windows[this.cutinId] = this;
   }
@@ -145,6 +151,9 @@ export class GMDeckCutinOverlay extends HandlebarsApplicationMixin(ApplicationV2
   async dismiss() {
     if (this.isDismissed) return;
     this.isDismissed = true;
+
+    // Stop sound immediately (before exit animation)
+    this.#stopSound();
 
     const el = this.element;
     el.querySelector('.cutin-container')?.classList.add('animate-exit');
@@ -167,5 +176,66 @@ export class GMDeckCutinOverlay extends HandlebarsApplicationMixin(ApplicationV2
 
     // Also dismiss locally
     this.dismiss();
+  }
+
+  /* -------------------------------------------- */
+  /*  Sound Management (GM-only)                  */
+  /* -------------------------------------------- */
+
+  /**
+   * Pause all currently playing playlist sounds and start the designated sound.
+   * Uses Foundry's pausedTime to capture playback position so sounds resume
+   * exactly where they left off when the cut-in is dismissed.
+   */
+  async #startSound() {
+    if (!game.user.isGM) return;
+    if (!this.config.soundUuid) return;
+
+    // Pause all currently playing sounds, saving their playback position
+    for (const playlist of game.playlists.contents) {
+      for (const sound of playlist.sounds.contents) {
+        if (sound.playing) {
+          const currentTime = sound.sound?.currentTime || 0;
+          this.pausedSounds.push({ playlistId: playlist.id, soundId: sound.id });
+          await sound.update({ playing: false, pausedTime: currentTime });
+        }
+      }
+    }
+
+    // Play the designated sound
+    const sound = await fromUuid(this.config.soundUuid);
+    if (sound) {
+      await sound.update({
+        playing: true,
+        volume: this.config.soundVolume ?? 0.8,
+        repeat: this.config.soundLoop ?? true
+      });
+    }
+  }
+
+  /**
+   * Stop the designated sound and resume previously paused sounds from where
+   * they left off.
+   */
+  async #stopSound() {
+    if (!game.user.isGM) return;
+    if (!this.config.soundUuid) return;
+
+    // Stop the designated sound
+    const sound = await fromUuid(this.config.soundUuid);
+    if (sound) {
+      await sound.update({ playing: false });
+    }
+
+    // Resume previously paused sounds (Foundry resumes from pausedTime automatically)
+    for (const { playlistId, soundId } of this.pausedSounds) {
+      const playlist = game.playlists.get(playlistId);
+      if (!playlist) continue;
+      const prevSound = playlist.sounds.get(soundId);
+      if (prevSound) {
+        await prevSound.update({ playing: true });
+      }
+    }
+    this.pausedSounds = [];
   }
 }
